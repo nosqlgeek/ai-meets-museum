@@ -15,7 +15,7 @@ Preparation material will be made available here:
 
 Please join the following Discord server for Q&A:
 
-* https://discord.gg/J2qERxHCPP
+* [NoSQL Geeks Discord](https://discord.gg/J2qERxHCPP)
 
 You will first only be able to communicate via the channel `#lobby. We will then add you to the private channel `#ai-meets-museum` for any project-specific communication.
 

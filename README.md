@@ -1,6 +1,6 @@
 # AI meets Museum
 
-This project is a joint effort of the [University of Augsburg](https://www.uni-augsburg.de/de/), [NoSQL Geeks](https://www.nosqlgeeks.com/de/index.html), and the [local museum in Krumbach](https://www.museum-krumbach.de).
+This project is a joint effort of the [university of Augsburg](https://www.uni-augsburg.de/de/), [NoSQL Geeks](https://www.nosqlgeeks.com/de/index.html), and the [local museum in Krumbach](https://www.museum-krumbach.de).
 
 
 * **Subject**: AI-powered tool for simplified information gathering around artifacts in a museum

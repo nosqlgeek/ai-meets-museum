@@ -10,3 +10,7 @@ This project is a joint effort of the [university of Augsburg](https://www.uni-a
 # Materials
 
 * [Preparation](./Preparation.md)
+
+# Project Management
+
+* [Project](https://github.com/users/nosqlgeek/projects/1)

@@ -13,6 +13,12 @@ Preparation material will be made available here:
 
 * [Preparation](./Preparation.md)
 
+Please join the following Discord server for Q&A:
+
+* https://discord.gg/J2qERxHCPP
+
+You will first only be able to communicate via the channel `#lobby. We will then add you to the private channel `#ai-meets-museum` for any project-specific communication.
+
 You will also need a Redis Stack database for development purposes. You can either use a local Redis Stack database, or one of the Cloud databases that were prepared for this project. The database endpoints can be found here:
 
 * [Databases](https://github.com/nosqlgeek/ai-meets-museum-priv)
@@ -22,5 +28,3 @@ You will also need a Redis Stack database for development purposes. You can eith
 We will use Github tasks and a Kanban-like board to assign tasks and keep an overview of the work that needs to be done. You can find the associated Github project here:
 
 * [Project](https://github.com/users/nosqlgeek/projects/1)
-
-

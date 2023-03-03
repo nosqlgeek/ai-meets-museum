@@ -17,7 +17,7 @@ You will also need a Redis Stack database for development purposes. You can eith
 
 * [Databases](https://github.com/nosqlgeek/ai-meets-museum-priv)
 
-# Project Management
+## Project Management
 
 We will use Github tasks and a Kanban-like board to assign tasks and keep an overview of the work that needs to be done. You can find the associated Github project here:
 

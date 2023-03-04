@@ -17,7 +17,7 @@ Please join the following Discord server for Q&A:
 
 * [Discord](https://discord.gg/J2qERxHCPP)
 
-You will first only be able to communicate via the channel `#lobby` channel. We will then add you to the private channel `#ai-meets-museum` for any project-specific communication.
+You will first only be able to communicate via the `#lobby` channel. We will then add you to the private channel `#ai-meets-museum` for any project-specific communication.
 
 You will also need a Redis Stack database for development purposes. You can either use a local Redis Stack database, or one of the Cloud databases that were prepared for this project. The database endpoints can be found here:
 

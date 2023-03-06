@@ -31,6 +31,6 @@ A list of the functional requirements can be found here:
 
 ## Tasks and Project Management
 
-We will use Github tasks and a Kanban-like board to assign tasks and keep an overview of the work that needs to be done. You can find the associated Github project here:
+We will use Github tasks and a Kanban-like board to keep an overview of the work that needs to be done. You can find the associated Github project here:
 
 * [Project](https://github.com/users/nosqlgeek/projects/1)

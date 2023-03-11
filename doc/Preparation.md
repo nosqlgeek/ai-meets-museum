@@ -89,7 +89,7 @@ Here are some example models:
 
 PyTorch offers pre-trained weights for several models. The weights that are set also depend on the dataset used for training purposes. One example dataset is 'ImageNet'. Further details about pre-trained PyTorch models can be found here:
 
-* [PyTorch - Models and Pre-Trained Weights]
+* [PyTorch - Models and Pre-Trained Weights](https://pytorch.org/vision/stable/models.html)
 
 In addition, here are some interesting reads:
 

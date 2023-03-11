@@ -1,3 +1,21 @@
+<!-- TOC -->
+* [Preparation material](#preparation-material)
+  * [Data cleansing and preparation](#data-cleansing-and-preparation)
+  * [M(achine) L(earning) models and vector embeddings](#m--achine--l--earning--models-and-vector-embeddings)
+  * [Vector embeddings](#vector-embeddings)
+  * [Model selection and evaluation](#model-selection-and-evaluation)
+    * [Pre-trained ML models](#pre-trained-ml-models)
+    * [Model evaluation](#model-evaluation)
+  * [Model training](#model-training)
+  * [V(ector) S(imilarity) S(earch)](#v--ector--s--imilarity--s--earch-)
+    * [Indexing method](#indexing-method)
+    * [Distance functions](#distance-functions)
+    * [Additional materials](#additional-materials)
+  * [Redis Stack](#redis-stack)
+  * [Web development](#web-development)
+<!-- TOC -->
+
+
 # Preparation material
 
 This document gives the participating students some insight into the technology that must be mastered to implement our AI-powered artifact classification tool.

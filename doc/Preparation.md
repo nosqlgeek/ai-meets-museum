@@ -2,15 +2,15 @@
 * [Preparation material](#preparation-material)
   * [Data cleansing and preparation](#data-cleansing-and-preparation)
   * [M(achine) L(earning) models and vector embeddings](#m--achine--l--earning--models-and-vector-embeddings)
-  * [Vector embeddings](#vector-embeddings)
-  * [Model selection and evaluation](#model-selection-and-evaluation)
-    * [Pre-trained ML models](#pre-trained-ml-models)
-    * [Model evaluation](#model-evaluation)
-  * [Model training](#model-training)
-  * [V(ector) S(imilarity) S(earch)](#v--ector--s--imilarity--s--earch-)
-    * [Indexing method](#indexing-method)
-    * [Distance functions](#distance-functions)
-    * [Additional materials](#additional-materials)
+    * [Vector embeddings](#vector-embeddings)
+    * [Model selection and evaluation](#model-selection-and-evaluation)
+      * [Pre-trained ML models](#pre-trained-ml-models)
+      * [Model evaluation](#model-evaluation)
+    * [Model training](#model-training)
+    * [V(ector) S(imilarity) S(earch)](#v--ector--s--imilarity--s--earch-)
+      * [Indexing method](#indexing-method)
+      * [Distance functions](#distance-functions)
+      * [Additional materials](#additional-materials)
   * [Redis Stack](#redis-stack)
   * [Web development](#web-development)
 <!-- TOC -->
@@ -54,7 +54,7 @@ Here are some additional resources:
 
 ## M(achine) L(earning) models and vector embeddings
 
-## Vector embeddings
+### Vector embeddings
 
 ML uses, for instance, A(rtificial) N(eural) N(etwork)s to approximate a function that is hard to describe explicitly. In ANN-s, mathematically modeled neurons are used. Those neurons have weighted connections to other neurons. Training is all about finding a suitable weight matrix. We call such a trained ANN an ML model. There are a bunch of different learning algorithms that can be used to train such a model. The output of a model is typically a vector. We can embed such an output vector within a vector space to find out if any other embedded vectors are close by. Here are the steps that are involved:
 
@@ -69,9 +69,9 @@ You can find additional material here:
 * [Blog article about vector similarity search in Retail](https://redis.com/blog/redismart-retail-application-with-redis/)
 * [Google's ML crash course](https://developers.google.com/machine-learning/crash-course/embeddings/video-lecture)
 
-## Model selection and evaluation
+### Model selection and evaluation
 
-### Pre-trained ML models
+#### Pre-trained ML models
 
 We will try several models out before we decide on one that will be used in our application. As said, there are already a bunch of pre-trained models that might be a good fit for our image-based vector embeddings. 
 
@@ -98,7 +98,7 @@ In addition, here are some interesting reads:
 * [Blog by Activeloop.ai](https://www.activeloop.ai/resources/generate-image-embeddings-using-a-pre-trained-cnn-and-store-them-in-hub/)
 * [Blog by Romain Beaumont](https://rom1504.medium.com/image-embeddings-ed1b194d113e)
 
-### Model evaluation
+#### Model evaluation
 
 Let's assume that we have a model `M_1` and `M_2`. How do we then actually know which model performs better? One approach could be the following one:
 
@@ -112,7 +112,7 @@ The following article describes it quite well:
 
 > There is indeed a lot of research around the efficiency of such models, which means that you can find general information about the performance and efficiency in research papers.
 
-## Model training
+### Model training
 
 Model training can be pretty complex, so I would propose the following approach for our project:
 
@@ -121,18 +121,18 @@ Model training can be pretty complex, so I would propose the following approach 
 3. Only train a model from scratch if we aren't happy with the results of step 1. or step 2.
 
 
-## V(ector) S(imilarity) S(earch)
+### V(ector) S(imilarity) S(earch)
 
 We already covered VSS in step three of the section 'Vector embeddings'. Some parameters influence the quality of the search, such as the indexing method and the distance function:
 
-### Indexing method
+#### Indexing method
 
 The indexing approach influences the time complexity of the K(-)N(earest)N(eighbour) search that we need to perform to find close-by vectors:
 
 * **Flat index**: The search index has a flat structure. This means that you need to perform a brute-force search to find similar vectors. The search result is accurate, but at the price of a worse time complexity when searching.
 * **Indexing with a H(ierarchical) N(avigable) S(mall) W(orld) graphs**: This is an approach for the approximate K-nearest neighbor search, which achieves a logarithmic time complexity.
 
-### Distance functions
+#### Distance functions
 
 The following distance functions between two vectors can be used to find vectors that are within a specific distance:
 
@@ -140,7 +140,7 @@ The following distance functions between two vectors can be used to find vectors
 * Internal product
 * Cosine distance
 
-### Additional materials
+#### Additional materials
 
 You can find further details here:
 

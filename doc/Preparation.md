@@ -20,8 +20,6 @@
 
 This document gives the participating students some insight into the technology that must be mastered to implement our AI-powered artifact classification tool.
 
-You will need to master a few things to be able to develop such a tool.
-
 ## Data cleansing and preparation
 
 The source/test data is currently stored in a relational database. We will need to perform some data cleansing before this data can be used for training purposes. One idea could be to use Pandas dataframes to operate on exported CSV files. We could then use Jupyter notebooks to visualize the results of the data analysis.

@@ -73,7 +73,7 @@ You can find additional material here:
 
 We will try several models out before we decide on one that will be used in our application. As said, there are already a bunch of pre-trained models that might be a good fit for our image-based vector embeddings. 
 
-A good class of models for image embeddings are in geneal:
+A good class of models for image embeddings are in general:
 
 * C(onvolutional) N(eural) N(etwork)s
 

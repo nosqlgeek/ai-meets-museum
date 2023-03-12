@@ -27,4 +27,6 @@ A museum usually has already existing objects that are not yet in the inventory.
 5. Furthermore, the inventory page (artifact details page) will allow us to override any recommendations. As soon as we save the artifact record, we mark it as 'curated' within the inventory.
 6. We will also implement a search mask to find artifacts based on full-text search and other properties (e.g., the inventory id). As soon as you click on an artifact in the search result, you get back into the artifact details mask that shows similar artifacts within the database again. It also allows you to modify properties.
 
+![Draft architecture](img/draft_architecture.png)
+
 > Note: An actual museum inventory software is much more complex by usually having additional modules (like, for instance: lending management, location management, and provenance). We will focus on the properties of the artifact only.

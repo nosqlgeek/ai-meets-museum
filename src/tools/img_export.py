@@ -18,6 +18,20 @@ def s3_exists(client, bucket, name):
     except Exception:
         return False
 
+'''
+An inventory number is a string that has always 6 digits. 
+If the numeric value is shorter than 6 digits, then we need to prepend zeros.
+'''
+def num_to_str(fname_prefix):
+    try:
+        # Check if the input is a number
+        # Strings like 0_1_2 can be converted to int
+        result = str(int(str(fname_prefix).replace('_','#').replace('-','#')))
+        while len(result) < 6:
+            result = '0' + result
+        return result
+    except ValueError:
+        return fname_prefix
 
 
 @click.command()
@@ -37,7 +51,7 @@ def click_main(csv_file, img_src_base, s3_access_key, s3_secret_key, img_encr_pw
         for row in r:
 
             img_path = row['MulPfadS'].replace('\\','/').replace('X:', '')
-            img_file = row['MulDateiS']
+            img_file = num_to_str(row['MulDateiS'])
             img_ext = row['MulExtentS']
             source_f_path = '{}{}/{}.{}'.format(img_src_base, img_path, img_file, img_ext)
             target_f_name_prefix = row['MulRefId']
@@ -61,6 +75,8 @@ def click_main(csv_file, img_src_base, s3_access_key, s3_secret_key, img_encr_pw
 
 if __name__ == '__main__':
     click_main()
+
+
 
 
 

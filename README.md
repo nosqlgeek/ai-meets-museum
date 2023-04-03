@@ -19,9 +19,13 @@ Please join the following Discord server for Q&A:
 
 You will first only be able to communicate via the `#lobby` channel. We will then add you to the private channel `#ai-meets-museum` for any project-specific communication.
 
-You will also need a Redis Stack database for development purposes. You can either use a local Redis Stack database, or one of the Cloud databases that were prepared for this project. The database endpoints can be found here:
+You will also need the source datab and a Redis Stack database. You can either use a local Redis Stack database, or one of the Cloud databases that were prepared for this project. The database endpoints can be found here:
 
 * [Databases](https://github.com/nosqlgeek/ai-meets-museum-priv)
+
+Further details about the source images can be found here:
+
+* [Source images](./doc/SourceImages.md)
 
 ## Functional Requirements
 

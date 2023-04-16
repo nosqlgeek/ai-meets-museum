@@ -8,3 +8,9 @@ input_image = Image.open("000002_1.jpg")
 ```
 
 Die Datei *imagenet_classes.txt* behinhaltet die Klassen, zu welchen ein Bild zugeordnet werden kann und stammt von der [Pytorch Seite](https://raw.githubusercontent.com/pytorch/hub/master/imagenet_classes.txt)
+
+# requirements.txt
+Enthält alle Pakete die zur Auführung benötigt werden, mit folgendem Befehl kann sie mit pip installiert werden.
+```
+pip install -r .\requirements.txt
+```

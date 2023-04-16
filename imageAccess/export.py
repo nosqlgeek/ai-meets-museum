@@ -12,8 +12,6 @@ client = Minio(
     secure=False
 )
 
-#print(client.list_buckets())
-
 client.fget_object('museum', '11_0.jpg', file_path='download.zip')
 
 zip.uncompress('download.zip', 'A1M33ts-Museum!', None, 1)

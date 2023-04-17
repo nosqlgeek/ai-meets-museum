@@ -10,9 +10,10 @@ alexnet = models.alexnet(weights="AlexNet_Weights.DEFAULT")
 resnet = models.resnet50(weights="ResNet50_Weights.DEFAULT")
 efficientnet = models.efficientnet_b0(weights="EfficientNet_B0_Weights.DEFAULT")
 vgg = torch.hub.load('pytorch/vision:v0.10.0', 'vgg11', pretrained=True)
+ResNet50 = models.resnet50(weights="ResNet50_Weights.DEFAULT")
 
 
-modellist = [mobilenet_v2, mobilenet_v3_small, mobilenet_v3_large, alexnet,  resnet, efficientnet, vgg] #yolo,
+modellist = [ResNet50] #yolo, mobilenet_v2, mobilenet_v3_small, mobilenet_v3_large, alexnet,  resnet, efficientnet, vgg, 
 
 # iterate over the models
 for model in modellist:
@@ -27,7 +28,7 @@ for model in modellist:
     ])
 
     # Image import
-    input_image = Image.open("000002_1.jpg")
+    input_image = Image.open('.\imageClassification\\images\\image9.jpg')
 
     # Preprocess image and prepare batch
     input_tensor  = preprocess(input_image)
@@ -41,11 +42,14 @@ for model in modellist:
     with torch.no_grad():
         output = model(input_batch)
 
+    # Print Tensor
+    #print(output)
+    
     # calculate probabilities
     probabilities = torch.nn.functional.softmax(output[0], dim=0) * 100
 
     # read the categories
-    with open("./torch/imagenet_classes.txt", "r") as f:
+    with open("./imageClassification/imagenet_classes.txt", "r") as f:
         categories = [s.strip() for s in f.readlines()]
 
     # Show top 5 categories per image

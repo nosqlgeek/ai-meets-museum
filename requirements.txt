@@ -1,5 +1,0 @@
-torch
-torchvision
-scikit-learn
-pandas
-tensorflow

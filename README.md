@@ -38,9 +38,3 @@ A list of the functional requirements can be found here:
 We will use Github tasks and a Kanban-like board to keep an overview of the work that needs to be done. You can find the associated Github project here:
 
 * [Project](https://github.com/users/nosqlgeek/projects/1)
-
-# requirements.txt
-Enthält alle Pakete die zur Auführung benötigt werden, mit folgendem Befehl kann sie mit pip installiert werden.
-```
-pip install -r .\requirements.txt
-```

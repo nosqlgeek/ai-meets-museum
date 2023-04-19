@@ -1,6 +1,7 @@
 import torch
 from torchvision import models, transforms
 from PIL import Image
+import pandas as pd
 
 mobilenet_v2 = models.mobilenet_v2(weights="MobileNet_V2_Weights.DEFAULT")
 mobilenet_v3_small = models.mobilenet_v3_small(weights="MobileNet_V3_Small_Weights.DEFAULT")
@@ -28,7 +29,7 @@ for model in modellist:
     ])
 
     # Image import
-    input_image = Image.open('.\imageClassification\\images\\image9.jpg')
+    input_image = Image.open('.\src\\tools\\imageClassification\\images\\000002_1.jpg')
 
     # Preprocess image and prepare batch
     input_tensor  = preprocess(input_image)
@@ -42,8 +43,12 @@ for model in modellist:
     with torch.no_grad():
         output = model(input_batch)
 
+    
     # Print Tensor
     #print(output)
+    
+    # Save Tensor to file
+    #torch.save(output, '.\src\\tools\\imageClassification\\output.t')
     
     # calculate probabilities
     probabilities = torch.nn.functional.softmax(output[0], dim=0) * 100

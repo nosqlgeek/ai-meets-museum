@@ -12,7 +12,8 @@ pip install -r .\requirements.txt
 Die .env Datei müsst ihr bei euch lokal erstellen, da diese die *secrets* enthält mit denen man auf die Datenbank zugreifen kann.
 Die Datei muss folgenden Variablen beinhalten:
 ```
-minio_url=""
-minio_access_key=""
-minio_secret_key=""
+minio_url = ''
+minio_access_key = ''
+minio_secret_key = ''
+ENCRYPTION_KEY = ''
 ```

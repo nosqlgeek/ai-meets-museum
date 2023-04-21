@@ -1,16 +1,45 @@
 # ImageClassification
+Sammel Branch rund um AI 
 
-Hiermit können Bilder durch verschiedenen Pytorch Modellen klassifiziert und die Wahrscheinlichkeiten ausgegeben werden.
-
-Im Code muss aktuell noch manuell angepasst werden, welches Bild klassifiziert werden soll, dies geschieht über folgende Codezeile:
+## .env
+Folgenden Environment Variablen würden über diesen Branch verwendet:
 ```
-input_image = Image.open("000002_1.jpg")
+minio_url = ''
+minio_access_key = ''
+minio_secret_key = ''
+ENCRYPTION_KEY = ''
+redis_host = ''
+redis_port = ''
+redis_password = ''
+```
+
+## requirements.txt
+Enthält alle Pakete die zur Auführung benötigt werden, mit folgendem Befehl kann sie mit pip installiert werden.
+```
+pip install -r .\src\tools\imageClassification\requirements.txt
+```
+
+## modelTest.py
+Enthält Code um ein Image von verschiedene Modelle zu kategorisieren zu lassen, um so Wahrscheinlichkeiten/Kategorien über mehrere Modelle hinweg vergleichen zu können.
+
+Im Code muss manuell angepasst werden, welches Bild klassifiziert werden soll, dies geschieht über folgende Codezeile:
+```
+input_image = Image.open('.\src\\tools\\imageClassification\\images\\000003_3.jpg')
 ```
 
 Die Datei *imagenet_classes.txt* behinhaltet die Klassen, zu welchen ein Bild zugeordnet werden kann und stammt von der [Pytorch Seite](https://raw.githubusercontent.com/pytorch/hub/master/imagenet_classes.txt)
 
-# requirements.txt
-Enthält alle Pakete die zur Auführung benötigt werden, mit folgendem Befehl kann sie mit pip installiert werden.
+
+## redisConnection.py
+Enthält jeglichen Code um ein Bild als Tensor in einer Redis DB zuspeichern.
+Zudem kann mit einem input_tensor in der Redis DB mittels KNN ähnlich Vektoren ausgegeben werden, der hierfür benötigte Index wird ebenfalls erstellt.
+
+## splitDataset.py
+Kann einen Datenbestand von einer .csv Datei in Trainings- und Testdaten aufteilen.
 ```
-pip install -r .\requirements.txt
+filename,lable
+image1,jpg,dog
+image2,jpg,dog
+image3,jpg,cat
+image4,jpg,cat
 ```

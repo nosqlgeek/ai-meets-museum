@@ -2,15 +2,18 @@ import torch
 from torchvision import models, transforms
 from PIL import Image
 import pandas as pd
+import os
+import numpy as np
 
-mobilenet_v2 = models.mobilenet_v2(weights="MobileNet_V2_Weights.DEFAULT")
-mobilenet_v3_small = models.mobilenet_v3_small(weights="MobileNet_V3_Small_Weights.DEFAULT")
-mobilenet_v3_large = models.mobilenet_v3_large(weights="MobileNet_V3_Large_Weights.DEFAULT")
-alexnet = models.alexnet(weights="AlexNet_Weights.DEFAULT")
+
+#mobilenet_v2 = models.mobilenet_v2(weights="MobileNet_V2_Weights.DEFAULT")
+#mobilenet_v3_small = models.mobilenet_v3_small(weights="MobileNet_V3_Small_Weights.DEFAULT")
+#mobilenet_v3_large = models.mobilenet_v3_large(weights="MobileNet_V3_Large_Weights.DEFAULT")
+#alexnet = models.alexnet(weights="AlexNet_Weights.DEFAULT")
 #yolo = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
-resnet = models.resnet50(weights="ResNet50_Weights.DEFAULT")
-efficientnet = models.efficientnet_b0(weights="EfficientNet_B0_Weights.DEFAULT")
-vgg = torch.hub.load('pytorch/vision:v0.10.0', 'vgg11', pretrained=True)
+#resnet = models.resnet50(weights="ResNet50_Weights.DEFAULT")
+#efficientnet = models.efficientnet_b0(weights="EfficientNet_B0_Weights.DEFAULT")
+#vgg = torch.hub.load('pytorch/vision:v0.10.0', 'vgg11', pretrained=True)
 ResNet50 = models.resnet50(weights="ResNet50_Weights.DEFAULT")
 
 
@@ -18,6 +21,7 @@ modellist = [ResNet50] #yolo, mobilenet_v2, mobilenet_v3_small, mobilenet_v3_lar
 
 # iterate over the models
 for model in modellist:
+
     model.eval()
 
     # Image normalization
@@ -29,11 +33,13 @@ for model in modellist:
     ])
 
     # Image import
-    input_image = Image.open('.\src\\tools\\imageClassification\\images\\000002_1.jpg')
+    input_image = Image.open('.\src\\tools\\imageClassification\\images\\000003_3.jpg')
+    image_name = os.path.splitext(os.path.basename(input_image.filename))[0]
+    #print(image_name)
 
     # Preprocess image and prepare batch
-    input_tensor  = preprocess(input_image)
-    input_batch  = input_tensor.unsqueeze(0)
+    input_tensor = preprocess(input_image)
+    input_batch = input_tensor.unsqueeze(0)
 
     # use cuda cores on gpu
     if torch.cuda.is_available():
@@ -43,22 +49,21 @@ for model in modellist:
     with torch.no_grad():
         output = model(input_batch)
 
-    
-    # Print Tensor
-    #print(output)
-    
+
     # Save Tensor to file
-    #torch.save(output, '.\src\\tools\\imageClassification\\output.t')
-    
+     #torch.save(output, '.\src\\tools\\imageClassification\\output.t')
+
     # calculate probabilities
     probabilities = torch.nn.functional.softmax(output[0], dim=0) * 100
+    #redis_vector = torch.from_numpy(vectors[0])
+    #probabilities = torch.nn.functional.softmax(redis_vector, dim=0) * 100
 
     # read the categories
-    with open("./imageClassification/imagenet_classes.txt", "r") as f:
+    with open("./src/tools/imageClassification/imagenet_classes.txt", "r") as f:
         categories = [s.strip() for s in f.readlines()]
 
     # Show top 5 categories per image
-    top5_prob, top5_catid = torch.topk(probabilities, 5)
+    top5_prob, top5_catid = torch.topk(probabilities, 1)
     print("\n",model._get_name())
     for i in range(top5_prob.size(0)):
         print(categories[top5_catid[i]], top5_prob[i].item())

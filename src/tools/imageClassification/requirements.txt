@@ -3,3 +3,8 @@ torchvision
 scikit-learn
 pandas
 tensorflow
+matplotlib
+redis
+python-dotenv
+numpy
+redisearch

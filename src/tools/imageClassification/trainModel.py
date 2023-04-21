@@ -5,10 +5,10 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import pandas as pd
 
+
+
 # Create a pre-trained ResNet50 model
 base_model = ResNet50(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
-
-
 
 # Add a new output layer
 # Classes count
@@ -56,3 +56,9 @@ print(f'Test loss: {loss}, Test accuracy: {accuracy}')
 # val_loss: validation loss is increasing dramatically, which indicates that the model is not generalizing well to new data.
 # val_accuracy: validation accuracy remains constant at 0.5, which is the same as random guessing for a binary classification problem.
 #
+
+
+
+
+# References:
+# https://stackoverflow.com/questions/69321848/fine-tuning-pretrained-model-mobilenet-v3-large-pytorch

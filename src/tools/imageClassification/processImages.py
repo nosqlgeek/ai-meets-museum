@@ -6,6 +6,7 @@ import os
 import numpy as np
 import redisearch
 import tensorflow as tf
+from tqdm import tqdm
 
 import redis
 import redis.commands.search
@@ -30,6 +31,10 @@ load_dotenv()
 
 redis_client = redis.StrictRedis(host=os.getenv('redis_host'), port=os.getenv('redis_port'), password=os.getenv('redis_password'))
 
+imagepath = '.\\src\\tools\\downloadImage\\img\\'
+
+
+# Model imports
  #mobilenet_v2 = models.mobilenet_v2(weights="MobileNet_V2_Weights.DEFAULT")
  #mobilenet_v3_small = models.mobilenet_v3_small(weights="MobileNet_V3_Small_Weights.DEFAULT")
  #mobilenet_v3_large = models.mobilenet_v3_large(weights="MobileNet_V3_Large_Weights.DEFAULT")
@@ -54,8 +59,9 @@ def createTensor(model, image_path):
     ])
 
     # Image import
-    input_image = Image.open(image_path) #'.\src\\tools\\imageClassification\\images\\000003_3.jpg'
-    image_name = os.path.splitext(os.path.basename(input_image.filename))[0]
+    input_image = Image.open(image_path)
+    input_image = input_image.convert('RGB')
+    image_name = os.path.splitext(os.path.basename(image_path))[0] #input_image.filename
 
     # Preprocess image and prepare batch
     input_tensor = preprocess(input_image)
@@ -113,17 +119,28 @@ def searchKNN(search_tensor, index_name):
 
     return vectors
 
+def processImages():
+    images = os.listdir(imagepath)
+    images.pop(0)
 
+    for image in tqdm(images, bar_format="{percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt}"):
+        if not redis_client.exists(image):
+            uploadTensorToRedis(createTensor(ResNet50, imagepath+image), image)
+        else:
+            print()
+            print(f'Tensor for {image} already exists - skipping')
 
-tensor1 = createTensor(ResNet50, '.\src\\tools\\imageClassification\\images\\000003_3.jpg')
-tensor2 = createTensor(ResNet50, '.\src\\tools\\imageClassification\\images\\000002_1.jpg')
+processImages()
 
-uploadTensorToRedis(tensor1,'1402')
+#tensor1 = createTensor(ResNet50, '.\src\\tools\\imageClassification\\images\\000003_3.jpg')
+#tensor2 = createTensor(ResNet50, '.\src\\tools\\imageClassification\\images\\000002_1.jpg')
+
+#uploadTensorToRedis(tensor1,'1402')
 #createIndex("myindex")
-vectors = searchKNN(tensor2, "myindex")
+#vectors = searchKNN(tensor2, "myindex")
 
-print('original tensor:')
-print(tensor1)
+#print('original tensor:')
+#print(tensor1)
 
-print('found tensor:')
-print(vectors)
+#print('found tensor:')
+#print(vectors)

@@ -8,3 +8,4 @@ redis
 python-dotenv
 numpy
 redisearch
+tqdm

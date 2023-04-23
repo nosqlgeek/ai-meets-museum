@@ -1,2 +1,3 @@
 pyminizip
 minio
+tqdm

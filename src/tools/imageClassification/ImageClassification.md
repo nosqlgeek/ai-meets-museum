@@ -30,14 +30,31 @@ input_image = Image.open('.\src\\tools\\imageClassification\\images\\000003_3.jp
 Die Datei *imagenet_classes.txt* behinhaltet die Klassen, zu welchen ein Bild zugeordnet werden kann und stammt von der [Pytorch Seite](https://raw.githubusercontent.com/pytorch/hub/master/imagenet_classes.txt)
 
 
-## redisConnection.py
+## processImages.py
 Enthält jeglichen Code um ein Bild als Tensor in einer Redis DB zuspeichern.
 Zudem kann mit einem input_tensor in der Redis DB mittels KNN ähnlich Vektoren ausgegeben werden, der hierfür benötigte Index wird ebenfalls erstellt.
 
+Mittels processImages() kann nun ein kompletter Ordner von .jpg Dateien als Tensoren auf Redis hochgeladen werden.
+```
+def processImages():
+    images = os.listdir(imagepath)
+    images.pop(0)
+
+    for image in tqdm(images, bar_format="{percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt}"):
+        if not redis_client.exists(image):
+            uploadTensorToRedis(createTensor(ResNet50, imagepath+image), image)
+        else:
+            print()
+            print(f'Tensor for {image} already exists - skipping')
+```
+
+
 ## splitDataset.py
 Kann einen Datenbestand von einer .csv Datei in Trainings- und Testdaten aufteilen.
+
+Input .csv Datei Aufbau:
 ```
-filename,lable
+filename,label
 image1,jpg,dog
 image2,jpg,dog
 image3,jpg,cat

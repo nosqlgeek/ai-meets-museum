@@ -9,3 +9,5 @@ python-dotenv
 numpy
 redisearch
 tqdm
+pyminizip
+minio

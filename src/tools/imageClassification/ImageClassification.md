@@ -1,23 +1,39 @@
 # ImageClassification
-Sammel Branch rund um AI 
+Sammel Branch rund um AI
+
+
+## requirements.txt
+Zu Beginn erstmal die benötigten Python Packages:
+Für die einfachere Handhabung habe ich die beiden requirement Dateien in Eine konsolidiert. Diese ist in [diesem Verzeichnis](https://github.com/nosqlgeek/ai-meets-museum/tree/imageClassification/src/tools/imageClassification) zu finden.
+Kann nach Clonen/Pullen des Branches wie folgt installiert werden:
+```
+pip install -r .\src\tools\imageClassification\requirements.txt
+```
+
 
 ## .env
-Folgenden Environment Variablen würden über diesen Branch verwendet:
+Eine Beispiel .env Datei liegt im [Hauptverzeichnis dieses Branches](https://github.com/nosqlgeek/ai-meets-museum/tree/imageClassification) --> example.env
+Diese muss natürlich noch mit jeglichen Keys befüllt werden.
+
+Für den Download von Bilder von Minio sind folgende Variablen notwendig:
 ```
 minio_url = ''
 minio_access_key = ''
 minio_secret_key = ''
 ENCRYPTION_KEY = ''
+image_folder = ''
+uncompress_folder = ''
+```
+
+Für die Erstellung und Upload von Tensoren zu Redis sind folgenden notwendig:
+```
 redis_host = ''
 redis_port = ''
 redis_password = ''
+image_folder = ''
 ```
+Für weitere Informationen bitte die example.env durchlesen.
 
-## requirements.txt
-Enthält alle Pakete die zur Auführung benötigt werden, mit folgendem Befehl kann sie mit pip installiert werden.
-```
-pip install -r .\src\tools\imageClassification\requirements.txt
-```
 
 ## modelTest.py
 Enthält Code um ein Image von verschiedene Modelle zu kategorisieren zu lassen, um so Wahrscheinlichkeiten/Kategorien über mehrere Modelle hinweg vergleichen zu können.
@@ -35,18 +51,6 @@ Enthält jeglichen Code um ein Bild als Tensor in einer Redis DB zuspeichern.
 Zudem kann mit einem input_tensor in der Redis DB mittels KNN ähnlich Vektoren ausgegeben werden, der hierfür benötigte Index wird ebenfalls erstellt.
 
 Mittels processImages() kann nun ein kompletter Ordner von .jpg Dateien als Tensoren auf Redis hochgeladen werden.
-```
-def processImages():
-    images = os.listdir(imagepath)
-    images.pop(0)
-
-    for image in tqdm(images, bar_format="{percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt}"):
-        if not redis_client.exists(image):
-            uploadTensorToRedis(createTensor(ResNet50, imagepath+image), image)
-        else:
-            print()
-            print(f'Tensor for {image} already exists - skipping')
-```
 
 
 ## splitDataset.py

@@ -30,21 +30,26 @@ from dotenv import load_dotenv
 load_dotenv()
 
 redis_client = redis.StrictRedis(host=os.getenv('redis_host'), port=os.getenv('redis_port'), password=os.getenv('redis_password'))
-
-imagepath = '.\\src\\tools\\downloadImage\\img\\'
-
+image_folder = os.getenv('image_folder')
 
 # Model imports
  #mobilenet_v2 = models.mobilenet_v2(weights="MobileNet_V2_Weights.DEFAULT")
  #mobilenet_v3_small = models.mobilenet_v3_small(weights="MobileNet_V3_Small_Weights.DEFAULT")
- #mobilenet_v3_large = models.mobilenet_v3_large(weights="MobileNet_V3_Large_Weights.DEFAULT")
+mobilenet_v3_large = models.mobilenet_v3_large(weights="MobileNet_V3_Large_Weights.DEFAULT")
  #alexnet = models.alexnet(weights="AlexNet_Weights.DEFAULT")
  #yolo = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
  #resnet = models.resnet50(weights="ResNet50_Weights.DEFAULT")
  #efficientnet = models.efficientnet_b0(weights="EfficientNet_B0_Weights.DEFAULT")
  #vgg = torch.hub.load('pytorch/vision:v0.10.0', 'vgg11', pretrained=True)
-ResNet50 = models.resnet50(weights="ResNet50_Weights.DEFAULT")
+ #ResNet50 = models.resnet50(weights="ResNet50_Weights.DEFAULT")
 
+def checkPathExistence():
+    try:
+        if not os.path.exists(os.getenv('image_folder')):
+            os.makedirs(os.getenv('image_folder'))
+    except Exception as e:
+        print(e)
+        exit()
 
 def createTensor(model, image_path):
     # Set model to evaulation mode
@@ -119,18 +124,22 @@ def searchKNN(search_tensor, index_name):
 
     return vectors
 
-def processImages():
-    images = os.listdir(imagepath)
-    images.pop(0)
+def processImages(model, image_path):    
+    checkPathExistence()
+    print(f'Processing images in {image_path} - can take a while...')    
+    images = os.listdir(image_path)    
+    if len(images) == 0:
+        print(f'No images found in {image_path}')
+        exit()
 
     for image in tqdm(images, bar_format="{percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt}"):
         if not redis_client.exists(image):
-            uploadTensorToRedis(createTensor(ResNet50, imagepath+image), image)
+            uploadTensorToRedis(createTensor(model, image_path+image), image)
         else:
             print()
             print(f'Tensor for {image} already exists - skipping')
 
-processImages()
+processImages(mobilenet_v3_large, image_folder)
 
 #tensor1 = createTensor(ResNet50, '.\src\\tools\\imageClassification\\images\\000003_3.jpg')
 #tensor2 = createTensor(ResNet50, '.\src\\tools\\imageClassification\\images\\000002_1.jpg')

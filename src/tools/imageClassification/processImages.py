@@ -7,6 +7,9 @@ import numpy as np
 import redisearch
 import tensorflow as tf
 from tqdm import tqdm
+import time
+import json
+import pickle
 
 import redis
 import redis.commands.search
@@ -30,18 +33,20 @@ from dotenv import load_dotenv
 load_dotenv()
 
 redis_client = redis.StrictRedis(host=os.getenv('redis_host'), port=os.getenv('redis_port'), password=os.getenv('redis_password'))
+#redis_client2 = redis.StrictRedis(host=os.getenv('redis_host_manu'), port=os.getenv('redis_port_manu'), password=os.getenv('redis_password_manu'))
 image_folder = os.getenv('image_folder')
 
-# Model imports
+#Model imports
  #mobilenet_v2 = models.mobilenet_v2(weights="MobileNet_V2_Weights.DEFAULT")
  #mobilenet_v3_small = models.mobilenet_v3_small(weights="MobileNet_V3_Small_Weights.DEFAULT")
 mobilenet_v3_large = models.mobilenet_v3_large(weights="MobileNet_V3_Large_Weights.DEFAULT")
  #alexnet = models.alexnet(weights="AlexNet_Weights.DEFAULT")
- #yolo = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
- #resnet = models.resnet50(weights="ResNet50_Weights.DEFAULT")
  #efficientnet = models.efficientnet_b0(weights="EfficientNet_B0_Weights.DEFAULT")
  #vgg = torch.hub.load('pytorch/vision:v0.10.0', 'vgg11', pretrained=True)
  #ResNet50 = models.resnet50(weights="ResNet50_Weights.DEFAULT")
+
+#Define the model to use in the code below:
+model=mobilenet_v3_large
 
 def checkPathExistence():
     try:
@@ -51,7 +56,7 @@ def checkPathExistence():
         print(e)
         exit()
 
-def createTensor(model, image_path):
+def createTensor(image_path):
     # Set model to evaulation mode
     model.eval()
 
@@ -83,48 +88,56 @@ def createTensor(model, image_path):
     return tensor
 
 def uploadTensorToRedis(tensor,objname):
-    # Convert tensor to bytes
-    tensor_bytes = tensor.numpy().astype(np.float32).tobytes(order='C')
+    #Store the vector in Redis as HASH
+     #tensor_bytes = tensor.numpy().astype(np.float32).tobytes(order='C')
+     #redis_client.hset(objname, mapping={"vector_field": tensor_bytes})
 
-    # Store the vector in Redis
-    redis_client.hset(objname, mapping={"vector_field": tensor_bytes})
+    ###################################################################
+    # WARNING !!!!!!!!!
+    # THIS NEED TO BE CHANGED TO THE OTHER OPTION BELOW
+    # BUT THIS IS ONLY POSSIBLE IF THERE ARE ENTRIES IN THE REDIS DB
+    ###################################################################
+
+    #Overwrite json in Redis DB
+    redis_client.json().set(objname, '$', {"vector": tensor[0].tolist()})
+
+    #Add Vector Data to JSON in Redis
+     #redis_client.json().set(objname, '$.vector', {"vector": tensor[0].tolist()})    
 
 def createIndex(index_name):
     # Create index
-    redis_client.ft(index_name='myindex').create_index(
+    t0 = time.time()
+    redis_client.ft(index_name=index_name).create_index(
             fields=(
                 VectorField(                    
-                    "vector_field", "FLAT", {"TYPE": "FLOAT32", "DIM": 1000, "DISTANCE_METRIC": "L2"}
+                    "$.vector", "FLAT", {"TYPE": "FLOAT32", "DIM": 1000, "DISTANCE_METRIC": "L2"}, as_name="vectorfield"
                 )
-            )
+            ),
+            definition=IndexDefinition(index_type=IndexType.JSON)
         )
+    t1 = time.time()
+    total = t1-t0
+    print(f'Index created in {total} seconds')
 
 def searchKNN(search_tensor, index_name):
     # vector_test for Similarity Search
-    search_tensor_bytes = search_tensor.numpy().astype(np.float32).tobytes(order='C')
+    search_tensor_bytes = search_tensor[0].numpy().astype(np.float32).tobytes(order='C')
 
-    # 2: is the number of nearest neighbors which we want to find
-    query = "*=>[KNN 2 @vector_field $searchVector]"
+    # 10: is the number of nearest neighbors which we want to find
+    # LIMIT 0 will disable that default limit
+    # KNN 10 LIMIT 0 @vector_field $searchVector
+    query = "*=>[KNN 10 @vectorfield $searchVector]"
     q = Query(query).dialect(2)
     
     result = redis_client.ft(index_name=index_name).search(
                 query=q,
                 query_params={'searchVector': search_tensor_bytes}
-            )
-
+            )    
     #print(result)
 
-    # Retrieve the vector field for each matching document
-    doc_ids = [doc.id for doc in result.docs]    
-    vectors = []
-    for doc_id in doc_ids:
-        vector_bytes = redis_client.hget(doc_id, 'vector_field')
-        vector = np.frombuffer(vector_bytes, dtype=np.float32)
-        vectors.append(vector)
+    return result
 
-    return vectors
-
-def processImages(model, image_path):    
+def processImages(image_path):    
     checkPathExistence()
     print(f'Processing images in {image_path} - can take a while...')    
     images = os.listdir(image_path)    
@@ -134,22 +147,54 @@ def processImages(model, image_path):
 
     for image in tqdm(images, bar_format="{percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt}"):
         if not redis_client.exists(image):
-            uploadTensorToRedis(createTensor(model, image_path+image), image)
+            uploadTensorToRedis(createTensor(image_path+image), image)
         else:
             print()
             print(f'Tensor for {image} already exists - skipping')
 
-processImages(mobilenet_v3_large, image_folder)
 
-#tensor1 = createTensor(ResNet50, '.\src\\tools\\imageClassification\\images\\000003_3.jpg')
-#tensor2 = createTensor(ResNet50, '.\src\\tools\\imageClassification\\images\\000002_1.jpg')
+################
+# Test Section #
+################
 
-#uploadTensorToRedis(tensor1,'1402')
-#createIndex("myindex")
-#vectors = searchKNN(tensor2, "myindex")
+#Upload one Image Tensor to Redis:
+ #uploadTensorToRedis(tensor1,'1402')
 
-#print('original tensor:')
-#print(tensor1)
+#Create Image Tensors of image_folder and Upload to Redis:
+ #processImages(image_folder)
 
-#print('found tensor:')
-#print(vectors)
+#Create index for KNN Search
+ #createIndex('myindex1')
+
+#KNN Search for given searchtensor
+searchtensor = createTensor('C:/Users/steph/.cache/downloadImage/image_folder/1007_0.jpg')
+result = searchKNN(searchtensor, "myindex1")
+#Print the results of the searchKNN function
+for doc in result.docs:  
+    json_data = json.loads(doc.json)
+    print('objname: ',doc.id,'| score: ',doc.__vectorfield_score)
+    #print('vector in json: ',json_data['vector'])
+
+
+# Compare different models and there scores
+ #modellist = [ResNet50, mobilenet_v2, mobilenet_v3_small, mobilenet_v3_large, alexnet, efficientnet, vgg]
+def evauluatModels():
+    # iterate over the models
+    for model in modellist:
+        t0 = time.time()
+        processImages(model, image_folder)
+        createIndex('myindex')
+        tensor2 = createTensor(model, 'C:/Users/steph/.cache/downloadImage/image_folder/1018_0.jpg')
+        result = searchKNN(tensor2, "myindex")
+        print(f'Model: {model.__class__.__name__}')
+        for doc in result.docs:
+            print(doc.id, doc.__vector_field_score)# ,doc.vector
+
+        redis_client.ft().execute_command('FLUSHALL')
+        t1 = time.time()
+        total = t1-t0
+        print(f'Index created in {total} seconds')
+
+#evauluatModels()
+
+redis_client.close()

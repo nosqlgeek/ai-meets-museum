@@ -62,11 +62,11 @@ def click_main(csv_file, img_src_base, s3_access_key, s3_secret_key, img_encr_pw
 
                 # An artifact can have multiple images.
                 seq = 0
-                check = '{}_#.{}'.format(target_f_name_prefix, img_ext)
+                check = '{}_#.{}'.format(target_f_name_prefix, img_ext.lower())
                 while s3_exists(client, S3_BUCKET, check.replace('#', str(seq))):
                     seq = seq + 1
 
-                target_f_name = '{}_{}.{}'.format(target_f_name_prefix, seq, img_ext)
+                target_f_name = '{}_{}.{}'.format(target_f_name_prefix, seq, img_ext.lower())
                 print("Uploading {} to {} ...".format(source_f_path, target_f_name))
                 client.fput_object(S3_BUCKET, target_f_name, data_file_path)
 
@@ -75,11 +75,3 @@ def click_main(csv_file, img_src_base, s3_access_key, s3_secret_key, img_encr_pw
 
 if __name__ == '__main__':
     click_main()
-
-
-
-
-
-
-
-

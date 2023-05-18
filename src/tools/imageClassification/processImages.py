@@ -138,10 +138,10 @@ def uploadTensorToRedis(tensor,objname):
     ###################################################################
 
     #Overwrite json in Redis DB
-     #redis_client.json().set(objname, '$', {"vector": tensor[0].tolist()})
+     #redis_client.json().set(objname, '$', {"Tensor": tensor[0].tolist()})
 
     #Add Vector Data to JSON in Redis
-    redis_client.json().set(redis_client.incr('MyKey'), '$.vector', {"vector": tensor[0].tolist()})
+    redis_client.json().set(redis_client.incr('MyKey'), '$.Tensor', {"Tensor": tensor[0].tolist()})
 
 
 """
@@ -154,17 +154,47 @@ Args:
 Returns:
     None
 """
-def createIndex(index_name):
+def createIndex(index_name, recreate=False):
+    def createIndexFunction():
+        redis_client.ft(index_name=index_name).create_index(
+            fields=(
+                TextField(
+                    "$.Bezeichnung", as_name="Bezeichnung"
+                ),
+                TextField(
+                    "$.InventarNr", as_name="InventarNr"
+                ),
+                TextField(
+                    "$.Material", as_name="Material"
+                ),
+                TextField(
+                    "$.Beschreibung", as_name="Beschreibung"
+                ),
+                TextField(
+                    "$.TrachslerNr", as_name="TrachslerNr"
+                ),
+                VectorField(                    
+                    "$.Tensor", "FLAT", {"TYPE": "FLOAT32", "DIM": 1000, "DISTANCE_METRIC": "L2"}, as_name="vectorfield"
+                )
+            ),
+            definition=IndexDefinition(index_type=IndexType.JSON)
+        )
+    
     t0 = time.time()
     try:
-        redis_client.ft(index_name=index_name).create_index(
-                fields=(
-                    VectorField(                    
-                        "$.Tensor", "FLAT", {"TYPE": "FLOAT32", "DIM": 1000, "DISTANCE_METRIC": "L2"}, as_name="vectorfield"
-                    )
-                ),
-                definition=IndexDefinition(index_type=IndexType.JSON)
-            )
+        if recreate:
+            try:
+                redis_client.ft(index_name=index_name).dropindex()
+            except Exception as e:
+                print('Index does not exist')
+            finally:
+                createIndexFunction()                
+        else:
+            if not redis_client.exists(index_name):
+                createIndexFunction()
+            else:
+                print(f'Index {index_name} already exists')
+                exit()
         t1 = time.time()
         total = t1-t0
         print(f'Index created in {total} seconds')
@@ -210,7 +240,7 @@ Args:
 Returns:
     None
 """
-def processImages(image_folder):    
+def processImages():
     checkPathExistence()
     print(f'Processing images in {image_folder} - can take a while...')    
     images = os.listdir(image_folder)    
@@ -232,6 +262,30 @@ def processImages(image_folder):
 
 
 """
+Performs a full-text search on the Redis index specified by `index_name`
+using the query `keyword`. This function utilizes the Query class to convert
+the query to the correct dialect, and then searches the Redis index using 
+the `search` method. The result of the search is returned.
+
+Args:
+- keyword (str): The query to search in the Redis index
+- index_name (str): The name of the Redis index to search in
+
+Returns:
+- The result of the search operation.
+"""
+def fullTextSearch(keyword, index_name):
+    query = keyword
+    q = Query(query).dialect(2)
+    
+    result = redis_client.ft(index_name=index_name).search(
+                query=q
+                #,query_params={'searchVector': search_tensor_bytes}
+            )
+    return result
+
+
+"""
 Iterates over a list of models and performs image processing, indexing, and searching
 using each model. Prints the model name and search results for each model. Flushes
 Redis at the end of each iteration. Returns nothing.
@@ -242,8 +296,8 @@ def evauluatModels():
     # iterate over the models
     for model in modellist:
         t0 = time.time()
-        processImages(model, image_folder)
-        createIndex('myindex')
+        processImages()
+        createIndex('myindex', recreate=True)
         tensor2 = createTensor(model, 'C:/Users/steph/.cache/downloadImage/image_folder/1018_0.jpg')
         result = searchKNN(tensor2, "myindex")
         print(f'Model: {model.__class__.__name__}')
@@ -255,6 +309,7 @@ def evauluatModels():
         total = t1-t0
         print(f'Index created in {total} seconds')
 
+#evauluatModels()
 
 """
 Uploads old data from a folder to Redis.
@@ -295,9 +350,11 @@ def uploadOldDataToRedis():
     #for item in jsonList:
     #    uploadTensorToRedis(createTensor(item), item)
 
-
-
 #uploadOldDataToRedis()
+
+
+
+
 
 
 
@@ -309,23 +366,53 @@ def uploadOldDataToRedis():
  #uploadTensorToRedis(tensor1,'1402')
 
 #Create Image Tensors of image_folder and Upload to Redis:
- #processImages(image_folder)
+ #processImages()
 
 #Create index for KNN Search
-createIndex('vectorIndex')
+ #createIndex('searchIndex', recreate=True)
 
 #KNN Search for given searchtensor
 def testKNNsearch():
     searchtensor = createTensor('C:/Users/steph/.cache/downloadImage/image_folder/5_0.jpg')
-    result = searchKNN(searchtensor, "vectorIndex")
+    result = searchKNN(searchtensor, "searchIndex")
     #Print the results of the searchKNN function
     for doc in result.docs:  
         json_data = json.loads(doc.json)
-        print('objname: ',doc.id,'\t|\tscore: ',doc.__vectorfield_score)
+        print(  'objname: ',doc.id,
+                'score: ',doc.__vectorfield_score,
+                'Bezeichnung: ',json_data['Bezeichnung'],
+                'TrachslerNr: ',json_data['TrachslerNr'])
         #print('vector in json: ',json_data['vector'])
 
 #testKNNsearch()
 
-#evauluatModels()
+#Full-Text Search for given keyword
+def testFullTextSearch(searchKeywords):
+    result = fullTextSearch(keyword=searchKeywords, index_name='searchIndex')
 
+    entry_count = len(result.docs)
+    print(f'Found: {entry_count} time(s) the searchKeywords: {searchKeywords}')
+    
+    #Print the results of the searchKNN function
+    for doc in result.docs:
+        json_data = json.loads(doc.json)
+        print(  'InventarNr:',json_data['InventarNr'],
+                '\nBezeichnung: ',json_data['Bezeichnung'],
+                '\nMaterial: ',json_data['Material'],
+                '\nBeschreibung: ',json_data['Beschreibung'],
+                '\nTrachslerNr: ',json_data['TrachslerNr'],'\n'
+                )
+
+#testFullTextSearch(searchKeywords='Ölbild Flusslandschaft')
+
+# No Results?!
+# Needs to be fixed
+testFullTextSearch(searchKeywords='@nTrachslerNr:(9.0)')
+
+
+
+
+
+
+# Close Redis Client
 redis_client.close()

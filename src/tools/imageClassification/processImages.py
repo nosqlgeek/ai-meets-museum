@@ -30,12 +30,14 @@ from redis.commands.search.query import GeoFilter, NumericFilter, Query
 from redis.commands.search.result import Result
 from redis.commands.search.suggestion import Suggestion
 
+
 from dotenv import load_dotenv
 load_dotenv()
 
 redis_client = redis.StrictRedis(host=os.getenv('redis_host'), port=os.getenv('redis_port'), password=os.getenv('redis_password'))
 redis_client_manu = redis.StrictRedis(host=os.getenv('redis_host_manu'), port=os.getenv('redis_port_manu'), password=os.getenv('redis_password_manu'))
 redis_client_prod = redis.StrictRedis(host=os.getenv('redis_host_prod'), port=os.getenv('redis_port_prod'), password=os.getenv('redis_password_prod'))
+
 
 #Model imports
  #mobilenet_v2 = models.mobilenet_v2(weights="MobileNet_V2_Weights.DEFAULT")
@@ -123,10 +125,8 @@ def createTensor(image_path):
 Uploads a tensor to Redis as a JSON object with a vector field.
 :param tensor: A tensor to upload.
 :type tensor: Tensor
-:param objname: The name of the Redis object to store the tensor in.
-:type objname: str
 """
-def uploadTensorToRedis(tensor,objname):
+def uploadTensorToRedis(tensor):
     #Store the vector in Redis as HASH
      #tensor_bytes = tensor.numpy().astype(np.float32).tobytes(order='C')
      #redis_client.hset(objname, mapping={"vector_field": tensor_bytes})    
@@ -145,12 +145,10 @@ def uploadTensorToRedis(tensor,objname):
 
 
 """
-Create a search index in RedisAI for the given index_name. The index is defined using a json schema and 
-has a single vector field with 1000 dimensions, using the L2 distance metric. 
-
+Creates a new index in Redisearch with the specified index_name.
 Args:
-    index_name (str): The name of the index to be created.
-
+    index_name (str): The name of the index to create.
+    recreate (bool): If set to True, drops the index if it already exists and creates a new one.
 Returns:
     None
 """
@@ -220,25 +218,27 @@ def searchKNN(search_tensor, index_name):
     # LIMIT 0 will disable that default limit
     # KNN 10 LIMIT 0 @vector_field $searchVector
     query = "*=>[KNN 10 @vectorfield $searchVector]"
-    q = Query(query).dialect(2)
+    q = Query(query).sort_by('__vectorfield_score').dialect(2)
     
     result = redis_client.ft(index_name=index_name).search(
                 query=q,
-                query_params={'searchVector': search_tensor_bytes}
-            )    
-    #print(result)
+                query_params={'searchVector': search_tensor_bytes}                
+            )
 
     return result
 
 
 """
-Processes images in a given directory and uploads their tensors to Redis. 
+Processes images in a given image folder by uploading their tensors to Redis using a Redis client. 
+If a tensor for an image already exists in Redis, it is skipped. If no images are found in the folder, 
+an error message is printed and the function exits. If an error occurs during processing, the function 
+prints the name of the image and the error message, but continues processing the remaining images. 
 
-Args:
-    image_path (str): A string representing the path to the directory containing the images.
+Parameters:
+None
 
 Returns:
-    None
+None
 """
 def processImages():
     checkPathExistence()
@@ -262,26 +262,26 @@ def processImages():
 
 
 """
-Performs a full-text search on the Redis index specified by `index_name`
-using the query `keyword`. This function utilizes the Query class to convert
-the query to the correct dialect, and then searches the Redis index using 
-the `search` method. The result of the search is returned.
+Executes a full text search on a Redis index.
 
 Args:
-- keyword (str): The query to search in the Redis index
-- index_name (str): The name of the Redis index to search in
+    searchKeywords (list): A list of search keywords.
+    index_name (str): The name of the Redis index to search.
 
 Returns:
-- The result of the search operation.
+    The search result obtained from Redis.
 """
-def fullTextSearch(keyword, index_name):
-    query = keyword
+def fullTextSearch(searchKeywords, index_name):
+    query = searchKeywords
     q = Query(query).dialect(2)
-    
     result = redis_client.ft(index_name=index_name).search(
                 query=q
-                #,query_params={'searchVector': search_tensor_bytes}
+                #,query_params={'searchValue': searchKeywords}
             )
+
+    #limit = (0, 20)
+    #result = redis_client.execute_command("ft.search", index_name, searchKeywords, "LIMIT", *limit)
+
     return result
 
 
@@ -354,10 +354,6 @@ def uploadOldDataToRedis():
 
 
 
-
-
-
-
 ################
 # Test Section #
 ################
@@ -388,7 +384,7 @@ def testKNNsearch():
 
 #Full-Text Search for given keyword
 def testFullTextSearch(searchKeywords):
-    result = fullTextSearch(keyword=searchKeywords, index_name='searchIndex')
+    result = fullTextSearch(searchKeywords=searchKeywords, index_name='searchIndex')
 
     entry_count = len(result.docs)
     print(f'Found: {entry_count} time(s) the searchKeywords: {searchKeywords}')
@@ -403,11 +399,12 @@ def testFullTextSearch(searchKeywords):
                 '\nTrachslerNr: ',json_data['TrachslerNr'],'\n'
                 )
 
-#testFullTextSearch(searchKeywords='Ölbild Flusslandschaft')
+
+#testFullTextSearch(searchKeywords='krippenfigur')
 
 # No Results?!
 # Needs to be fixed
-testFullTextSearch(searchKeywords='@nTrachslerNr:(9.0)')
+#testFullTextSearch(searchKeywords='@nTrachslerNr:(9.0)')
 
 
 

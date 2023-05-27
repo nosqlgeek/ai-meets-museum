@@ -283,7 +283,7 @@ def fullTextSearch(searchKeywords, index_name, page):
             )
 
     #return result
-
+    search_data = []
     for doc in result.docs:
         search = json.loads(doc.json)
         del search['Tensor']
@@ -356,3 +356,15 @@ def uploadOldDataToRedis():
 
     #for item in jsonList:
     #    uploadTensorToRedis(createTensor(item), item)
+
+
+
+def getNeighbours(json_input, count):
+    neighbours = []
+    for i in range(count):
+        myjson = json.loads(json_input.docs[i].json)
+        del myjson['Tensor']
+        myjson = json.dumps(myjson, indent=4)
+        myjson = json.loads(myjson)
+        neighbours.append(myjson)
+    return neighbours

@@ -20,3 +20,6 @@ Hiermit können die besagten Bilder aus dem Minio Bucket heruntergeladen und ent
 ## renameImagesToInv.py
 Mit dieser Funktion können die Bilder zur dazugehörgigen InventarNr umbenannt werden.
 Wichtig ist hierbei, dass 'source' und 'destination' nicht der selbe Ordner ist.
+
+Hierzu ist weiterhin die JSON File notwendig, die die Beziehungen enthält.
+Diese kann jedoch wegen Datenschutzrechtlichen Gründen hier ebenfalls nicht hochgeladen werden.

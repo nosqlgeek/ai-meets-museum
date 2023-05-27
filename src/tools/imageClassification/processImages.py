@@ -358,7 +358,17 @@ def uploadOldDataToRedis():
     #    uploadTensorToRedis(createTensor(item), item)
 
 
+"""
+Returns a list of dictionaries representing the neighbours of the input JSON documents. 
+The function takes two parameters:
 
+* `json_input` (str): A JSON string containing input documents.
+* `count` (int): The number of neighbours to return.
+
+The function iterates over the input documents, parses them as JSON, removes the 'Tensor' key from 
+each document, and adds the resulting dictionary to a list of neighbours. The function returns this 
+list of neighbours.
+"""
 def getNeighbours(json_input, count):
     neighbours = []
     for i in range(count):

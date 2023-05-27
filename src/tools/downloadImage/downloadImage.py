@@ -38,10 +38,8 @@ def checkPathExistence():
 
 checkPathExistence()
 
-bigjpg_objects = [obj for obj in objects if "_0.JPG" in obj.object_name]
-smalljpg_objects = [obj for obj in objects if "_0.jpg" in obj.object_name]
-
-objects=smalljpg_objects
+firstImagesOfObjects = [obj for obj in objects if "_0" in obj.object_name]
+objects=firstImagesOfObjects
 
 total_items = len(objects)
 print('Downloading Items: ',total_items)

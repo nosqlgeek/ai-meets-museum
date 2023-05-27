@@ -271,16 +271,15 @@ Args:
 Returns:
     The search result obtained from Redis.
 """
-def fullTextSearch(searchKeywords, index_name):
+def fullTextSearch(searchKeywords, index_name, page):
+    entries_per_page = 10
+    start_entry = (page - 1) * entries_per_page
+
     query = searchKeywords
-    q = Query(query).dialect(2)
+    q = Query(query).paging(start_entry,10).dialect(2)
     result = redis_client.ft(index_name=index_name).search(
                 query=q
-                #,query_params={'searchValue': searchKeywords}
             )
-
-    #limit = (0, 20)
-    #result = redis_client.execute_command("ft.search", index_name, searchKeywords, "LIMIT", *limit)
 
     return result
 
@@ -323,7 +322,7 @@ def uploadOldDataToRedis():
         print(f'No images found in {image_folder}')
         exit()
 
-    f = open('./src/tools/imageClassification/oldDataSet.json')
+    f = open('./src/ai-meets-museum/services/imageClassification/oldDataSet.json')
     myjson = json.load(f)
     t0 = time.time()
 
@@ -384,7 +383,7 @@ def testKNNsearch():
 
 #Full-Text Search for given keyword
 def testFullTextSearch(searchKeywords):
-    result = fullTextSearch(searchKeywords=searchKeywords, index_name='searchIndex')
+    result = fullTextSearch(searchKeywords=searchKeywords, index_name='searchIndex', page=1)
 
     entry_count = len(result.docs)
     print(f'Found: {entry_count} time(s) the searchKeywords: {searchKeywords}')
@@ -400,7 +399,7 @@ def testFullTextSearch(searchKeywords):
                 )
 
 
-#testFullTextSearch(searchKeywords='krippenfigur')
+testFullTextSearch(searchKeywords='krippenfigur')
 
 # No Results?!
 # Needs to be fixed

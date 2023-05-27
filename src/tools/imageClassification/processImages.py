@@ -262,14 +262,15 @@ def processImages():
 
 
 """
-Executes a full text search on a Redis index.
+Searches a Redis index for documents containing the specified search keywords, and returns a list of search results.
 
 Args:
-    searchKeywords (list): A list of search keywords.
+    searchKeywords (str): The keywords to search for.
     index_name (str): The name of the Redis index to search.
+    page (int): The page of results to return.
 
 Returns:
-    The search result obtained from Redis.
+    list: A list of dictionaries containing search result data.
 """
 def fullTextSearch(searchKeywords, index_name, page):
     entries_per_page = 10
@@ -281,7 +282,15 @@ def fullTextSearch(searchKeywords, index_name, page):
                 query=q
             )
 
-    return result
+    #return result
+
+    for doc in result.docs:
+        search = json.loads(doc.json)
+        del search['Tensor']
+        search = json.dumps(search, indent=4)
+        search = json.loads(search)
+        search_data.append(search)
+    return search_data
 
 
 """
@@ -308,7 +317,6 @@ def evauluatModels():
         total = t1-t0
         print(f'Index created in {total} seconds')
 
-#evauluatModels()
 
 """
 Uploads old data from a folder to Redis.
@@ -348,67 +356,3 @@ def uploadOldDataToRedis():
 
     #for item in jsonList:
     #    uploadTensorToRedis(createTensor(item), item)
-
-#uploadOldDataToRedis()
-
-
-
-################
-# Test Section #
-################
-
-#Upload one Image Tensor to Redis:
- #uploadTensorToRedis(tensor1,'1402')
-
-#Create Image Tensors of image_folder and Upload to Redis:
- #processImages()
-
-#Create index for KNN Search
- #createIndex('searchIndex', recreate=True)
-
-#KNN Search for given searchtensor
-def testKNNsearch():
-    searchtensor = createTensor('C:/Users/steph/.cache/downloadImage/image_folder/5_0.jpg')
-    result = searchKNN(searchtensor, "searchIndex")
-    #Print the results of the searchKNN function
-    for doc in result.docs:  
-        json_data = json.loads(doc.json)
-        print(  'objname: ',doc.id,
-                'score: ',doc.__vectorfield_score,
-                'Bezeichnung: ',json_data['Bezeichnung'],
-                'TrachslerNr: ',json_data['TrachslerNr'])
-        #print('vector in json: ',json_data['vector'])
-
-#testKNNsearch()
-
-#Full-Text Search for given keyword
-def testFullTextSearch(searchKeywords):
-    result = fullTextSearch(searchKeywords=searchKeywords, index_name='searchIndex', page=1)
-
-    entry_count = len(result.docs)
-    print(f'Found: {entry_count} time(s) the searchKeywords: {searchKeywords}')
-    
-    #Print the results of the searchKNN function
-    for doc in result.docs:
-        json_data = json.loads(doc.json)
-        print(  'InventarNr:',json_data['InventarNr'],
-                '\nBezeichnung: ',json_data['Bezeichnung'],
-                '\nMaterial: ',json_data['Material'],
-                '\nBeschreibung: ',json_data['Beschreibung'],
-                '\nTrachslerNr: ',json_data['TrachslerNr'],'\n'
-                )
-
-
-testFullTextSearch(searchKeywords='krippenfigur')
-
-# No Results?!
-# Needs to be fixed
-#testFullTextSearch(searchKeywords='@nTrachslerNr:(9.0)')
-
-
-
-
-
-
-# Close Redis Client
-redis_client.close()

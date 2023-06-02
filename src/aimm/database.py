@@ -6,6 +6,7 @@ import numpy as np
 import redisearch
 import tensorflow as tf
 import json
+import time
 
 import redis
 import redis.commands.search

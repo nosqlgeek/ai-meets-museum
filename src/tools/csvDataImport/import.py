@@ -3,12 +3,15 @@ import os
 import json
 import time
 from tqdm import tqdm
-from aimm.database import createTensor
+
+import sys
+sys.path.append('./src/tools/imageClassification')
+from processImages import createTensor
 
 from dotenv import load_dotenv
 load_dotenv()
 
-redis_client_prod = redis.StrictRedis(host=os.getenv('redis_host'), port=os.getenv('redis_port'), password=os.getenv('redis_password'))
+redis_client = redis.StrictRedis(host=os.getenv('redis_host'), port=os.getenv('redis_port'), password=os.getenv('redis_password'))
 image_folder = os.getenv('image_folder')
 
 """

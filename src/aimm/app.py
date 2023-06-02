@@ -13,8 +13,7 @@ from wtforms.validators import data_required
 
 load_dotenv()  # take environment variables from .env.
 
-
-# test 2
+#Ich mag Kekse
 
 IMG_FOLDER = './static/img'
 UPLOAD_FOLDER = 'ImgUpload/'
@@ -26,7 +25,6 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 REDIS_CLIENT = redis.Redis(host=os.getenv("REDIS_HOST"), port=os.getenv("REDIS_PORT"),
                            password=os.getenv("REDIS_PASSWORD"))
-
 
 # form to enter the object data
 class ObjectForm(FlaskForm):

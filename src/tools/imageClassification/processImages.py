@@ -34,9 +34,8 @@ from redis.commands.search.suggestion import Suggestion
 from dotenv import load_dotenv
 load_dotenv()
 
+redis_client_test = redis.StrictRedis(host=os.getenv('redis_host_test'), port=os.getenv('redis_port_test'), password=os.getenv('redis_password_test'))
 redis_client = redis.StrictRedis(host=os.getenv('redis_host'), port=os.getenv('redis_port'), password=os.getenv('redis_password'))
-redis_client_manu = redis.StrictRedis(host=os.getenv('redis_host_manu'), port=os.getenv('redis_port_manu'), password=os.getenv('redis_password_manu'))
-redis_client_prod = redis.StrictRedis(host=os.getenv('redis_host_prod'), port=os.getenv('redis_port_prod'), password=os.getenv('redis_password_prod'))
 
 
 #Model imports
@@ -58,7 +57,7 @@ ResNet50 = models.resnet50(weights="ResNet50_Weights.DEFAULT")
 # Which Model should be used?
 model = ResNet50
 # Which Redis DB should be used?
-redis_client = redis_client_prod
+redis_client = redis_client_test
 # Where are the iamges stored?
 image_folder = os.getenv('image_folder')
 
@@ -175,7 +174,7 @@ def createIndex(index_name, recreate=False):
                     "$.Tensor", "FLAT", {"TYPE": "FLOAT32", "DIM": 1000, "DISTANCE_METRIC": "L2"}, as_name="vectorfield"
                 )
             ),
-            definition=IndexDefinition(index_type=IndexType.JSON)
+            definition=IndexDefinition(prefix=["art:"], index_type=IndexType.JSON)
         )
     
     t0 = time.time()
@@ -360,3 +359,18 @@ def getNeighbours(json_input, count):
         myjson = json.loads(myjson)
         neighbours.append(myjson)
     return neighbours
+
+
+
+def testmethod():
+    keys = redis_client.keys()
+    for key in keys:
+        # Rename the key
+        new_key = 'new_' + key.decode('utf-8')
+        redis_client.rename(key, new_key)
+
+        # Delete the old key
+        redis_client.delete(key)
+
+
+testmethod()

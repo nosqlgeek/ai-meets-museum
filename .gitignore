@@ -1,0 +1,5 @@
+*.jpg
+*.csv
+.env
+*.json
+*.pyc

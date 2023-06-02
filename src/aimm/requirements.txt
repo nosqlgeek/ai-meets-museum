@@ -1,9 +1,0 @@
-torch
-torchvision
-scikit-learn
-pandas
-tensorflow
-redis
-python-dotenv
-numpy
-redisearch

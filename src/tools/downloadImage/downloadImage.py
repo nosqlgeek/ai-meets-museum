@@ -45,45 +45,23 @@ total_items = len(objects)
 print('Downloading Items: ',total_items)
 
 for obj in tqdm(objects, total=total_items, bar_format="{percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt}"):
-    if "_0.jpg" in obj.object_name:
-        # Download the object data
-        filenamejpg = obj.object_name.lower()
-        filenamezip = filenamejpg.replace('.jpg', '.zip')
+    # Download the object data
+    filenamejpg = obj.object_name.lower()
+    filenamezip = filenamejpg.replace('.jpg', '.zip')
 
-        if not os.path.isfile(image_folder+filenamejpg):
-            try:
-                client.fget_object(minio_bucket, filenamejpg, file_path=uncompress_folder+filenamezip)
-            except Exception as e:
-                print(e)
+    if not os.path.isfile(image_folder+filenamejpg):
+        try:
+            client.fget_object(minio_bucket, filenamejpg, file_path=uncompress_folder+filenamezip)
+        except Exception as e:
+            print(e)
 
-            zip.uncompress(uncompress_folder+filenamezip, os.getenv('ENCRYPTION_KEY'), uncompress_folder, 1)
-            os.remove(filenamezip)
+        zip.uncompress(uncompress_folder+filenamezip, os.getenv('ENCRYPTION_KEY'), uncompress_folder, 1)
+        os.remove(filenamezip)
 
-            os.chdir(original_dir)
-            extracted_file_name = os.listdir(uncompress_folder)[0]
-            
-            os.rename(uncompress_folder+extracted_file_name, image_folder+filenamejpg)
-        else:
-            print()
-            print(f'{filenamejpg} already exists - skipping')
-    if "_0.JPG" in obj.object_name:
-        # Download the object data
-        filenamejpg = obj.object_name
-        filenamezip = filenamejpg.replace('.JPG', '.zip')
-    
-        if not os.path.isfile(image_folder+filenamejpg):
-            try:
-                client.fget_object(minio_bucket, filenamejpg, file_path=uncompress_folder+filenamezip)
-            except Exception as e:
-                print(e)
-    
-            zip.uncompress(uncompress_folder+filenamezip, os.getenv('ENCRYPTION_KEY'), uncompress_folder, 1)
-            os.remove(filenamezip)
-    
-            os.chdir(original_dir)
-            extracted_file_name = os.listdir(uncompress_folder)[0]
-            
-            os.rename(uncompress_folder+extracted_file_name, image_folder+filenamejpg.replace('.JPG', '.jpg'))
-        else:
-            print()
-            print(f'{filenamejpg} already exists - skipping')
+        os.chdir(original_dir)
+        extracted_file_name = os.listdir(uncompress_folder)[0]
+        
+        os.rename(uncompress_folder+extracted_file_name, image_folder+filenamejpg)
+    else:
+        print()
+        print(f'{filenamejpg} already exists - skipping')

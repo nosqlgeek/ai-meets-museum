@@ -284,6 +284,7 @@ def fullTextSearch(searchKeywords, index_name, page):
 
     #return result
     search_data = []
+    search_data.append(result.total)
     for doc in result.docs:
         search = json.loads(doc.json)
         del search['Tensor']
@@ -291,6 +292,27 @@ def fullTextSearch(searchKeywords, index_name, page):
         search = json.loads(search)
         search_data.append(search)
     return search_data
+
+
+"""
+Returns the total number of full text search results for the given search keywords
+and Redisearch index name.
+
+Args:
+    searchKeywords (str): The search keywords to query the Redisearch index with.
+    index_name (str): The name of the Redisearch index to query.
+
+Returns:
+    int: The total number of search results.
+"""
+def getFullTextSearchCount(searchKeywords, index_name):
+    query = searchKeywords
+    q = Query(query).paging(0,0).dialect(2)
+    result = redis_client.ft(index_name=index_name).search(
+                query=q
+            )
+            
+    return result.total
 
 
 """
@@ -316,46 +338,6 @@ def evauluatModels():
         t1 = time.time()
         total = t1-t0
         print(f'Index created in {total} seconds')
-
-
-"""
-Uploads old data from a folder to Redis.
-
-Returns:
-    None
-"""
-def uploadOldDataToRedis(): 
-    images = os.listdir(image_folder)    
-    if len(images) == 0:
-        print(f'No images found in {image_folder}')
-        exit()
-
-    f = open('./src/ai-meets-museum/services/imageClassification/oldDataSet.json')
-    myjson = json.load(f)
-    t0 = time.time()
-
-    for image in tqdm(images, bar_format="{percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt}"):
-        try:            
-            tensor = createTensor(image_folder+image)
-            myjsonentry = None
-            for entry in myjson:                           
-                if entry['ObjektId'] == int(image.split('_')[0]):                        
-                    entry['Tensor'] = tensor[0].tolist()
-                    myjsonentry = entry
-                    break
-            
-            redis_client.json().set(redis_client.incr('MyKey'), '$', myjsonentry)  
-        except Exception as e:
-            print(image)
-            print(e)
-            continue
-    
-    t1 = time.time()
-    total = t1-t0
-    print(f'Upload took: {total} seconds')
-
-    #for item in jsonList:
-    #    uploadTensorToRedis(createTensor(item), item)
 
 
 """

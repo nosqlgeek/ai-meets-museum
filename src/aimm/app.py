@@ -13,6 +13,7 @@ from wtforms.validators import data_required
 
 load_dotenv()  # take environment variables from .env.
 
+
 # test 2
 
 IMG_FOLDER = './static/img'

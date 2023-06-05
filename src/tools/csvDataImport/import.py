@@ -37,7 +37,11 @@ from processImages import createTensor
 from dotenv import load_dotenv
 load_dotenv()
 
-redis_client = redis.StrictRedis(host=os.getenv('redis_host_test'), port=os.getenv('redis_port_test'), password=os.getenv('redis_password_test'))
+
+redis_client = redis.StrictRedis(host=os.getenv('redis_host'), port=os.getenv('redis_port'), password=os.getenv('redis_password'))
+#redis_client = redis.StrictRedis(host=os.getenv('redis_host_test'), port=os.getenv('redis_port_test'), password=os.getenv('redis_password_test'))
+#redis_client = redis.StrictRedis(host=os.getenv('redis_host_manu'), port=os.getenv('redis_port_manu'), password=os.getenv('redis_password_manu'))
+#redis_client = redis.StrictRedis(host=os.getenv('redis_host_markus'), port=os.getenv('redis_port_markus'), password=os.getenv('redis_password_markus'))
 image_folder = os.getenv('image_folder')
 
 target = 'C:/Users/steph/.cache/downloadImage/target_folder/'
@@ -61,11 +65,9 @@ def uploadOldDataToRedis():
                 if entry['ObjektId'] == int(image.split('_')[0]):                        
                     entry['Tensor'] = tensor[0].tolist()
                     myjsonentry = entry
-                    break            
+                    break
             
             ObjektNr = redis_client.incr('ObjektNr')
-            #print(redis_client.get('ObjektNr'))
-
             myjsonentry['BildNr'] = ObjektNr
             redis_client.json().set('art:'+str(ObjektNr), '$', myjsonentry)
 

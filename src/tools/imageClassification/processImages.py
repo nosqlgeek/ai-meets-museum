@@ -35,6 +35,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 redis_client_test = redis.StrictRedis(host=os.getenv('redis_host_test'), port=os.getenv('redis_port_test'), password=os.getenv('redis_password_test'))
+redis_client_manu = redis.StrictRedis(host=os.getenv('redis_host_manu'), port=os.getenv('redis_port_manu'), password=os.getenv('redis_password_manu'))
 redis_client = redis.StrictRedis(host=os.getenv('redis_host'), port=os.getenv('redis_port'), password=os.getenv('redis_password'))
 
 
@@ -57,7 +58,7 @@ ResNet50 = models.resnet50(weights="ResNet50_Weights.DEFAULT")
 # Which Model should be used?
 model = ResNet50
 # Which Redis DB should be used?
-redis_client = redis_client_test
+redis_client = redis_client
 # Where are the iamges stored?
 image_folder = os.getenv('image_folder')
 
@@ -121,26 +122,26 @@ def createTensor(image_path):
 
 
 """
-Uploads a tensor to Redis as a JSON object with a vector field.
-:param tensor: A tensor to upload.
-:type tensor: Tensor
+Uploads a JSON object to Redis and returns the assigned ObjektNr. 
+
+Args:
+    json_data (dict): The JSON object to upload.
+    objectClass (str): The object class to use as a prefix for the Redis key. Default is 'art:'.
+
+Returns:
+    ObjektNr (int): The assigned object number.
 """
-def uploadTensorToRedis(tensor):
-    #Store the vector in Redis as HASH
-     #tensor_bytes = tensor.numpy().astype(np.float32).tobytes(order='C')
-     #redis_client.hset(objname, mapping={"vector_field": tensor_bytes})    
+def uploadObjectToRedis(json_data, objectClass='art:'):
+    #Get current ObjektNr
+    ObjektNr = redis_client.incr('ObjektNr')
 
-    ###################################################################
-    # WARNING !!!!!!!!!
-    # THIS NEED TO BE CHANGED TO THE OTHER OPTION BELOW
-    # BUT THIS IS ONLY POSSIBLE IF THERE ARE ENTRIES IN THE REDIS DB
-    ###################################################################
+    #Add ObjektNr to json
+    json_data['BildNr'] = ObjektNr
 
-    #Overwrite json in Redis DB
-     #redis_client.json().set(objname, '$', {"Tensor": tensor[0].tolist()})
+    #Upload to Redis
+    redis_client.json().set(objectClass+str(ObjektNr), '$', json_data)
 
-    #Add Vector Data to JSON in Redis
-    redis_client.json().set(redis_client.incr('MyKey'), '$.Tensor', {"Tensor": tensor[0].tolist()})
+    return ObjektNr
 
 
 """
@@ -359,18 +360,3 @@ def getNeighbours(json_input, count):
         myjson = json.loads(myjson)
         neighbours.append(myjson)
     return neighbours
-
-
-
-def testmethod():
-    keys = redis_client.keys()
-    for key in keys:
-        # Rename the key
-        new_key = 'new_' + key.decode('utf-8')
-        redis_client.rename(key, new_key)
-
-        # Delete the old key
-        redis_client.delete(key)
-
-
-testmethod()

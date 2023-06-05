@@ -19,7 +19,7 @@ from processImages import *
 
 
 #Create index for KNN Search
- #createIndex('searchIndex', recreate=True)
+createIndex('searchIndex', recreate=True)
 
 
 #KNN Search for given searchtensor
@@ -46,7 +46,22 @@ def testFullTextSearch(searchKeywords):
 
 
 
-testFullTextSearch(searchKeywords='krippenfigur')
+#testFullTextSearch(searchKeywords='krippenfigur')
 
 
-print(getFullTextSearchCount('krippenfigur', 'searchIndex'))
+#print(getFullTextSearchCount('krippenfigur', 'searchIndex'))
+
+
+
+def testmethod():
+    keys = redis_client.keys()
+    for key in keys:
+        # Rename the key
+        new_key = 'new_' + key.decode('utf-8')
+        redis_client.rename(key, new_key)
+
+        # Delete the old key
+        redis_client.delete(key)
+
+
+#testmethod()

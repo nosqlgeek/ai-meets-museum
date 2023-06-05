@@ -53,12 +53,12 @@ def searchKNN(search_tensor, index_name, redis_client):
     # 10: is the number of nearest neighbors which we want to find
     # LIMIT 0 will disable that default limit
     # KNN 10 LIMIT 0 @vector_field $searchVector
-    query = "*=>[KNN 10 @vectorfield $searchVector]"
+    query = "*=>[KNN 10 @vectorfield $searchIndex]"
     q = Query(query).sort_by('__vectorfield_score').dialect(2)
     
     result = redis_client.ft(index_name=index_name).search(
                 query=q,
-                query_params={'searchVector': search_tensor_bytes}
+                query_params={'searchIndex': search_tensor_bytes}
             )    
     # print(result)
     return result

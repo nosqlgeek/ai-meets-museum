@@ -57,7 +57,7 @@ def upload_image():
         session['uploaded_filename'] = filename
         file_path = UPLOAD_FOLDER + filename
         tensor = Util.createTensor(file_path)
-        knn_result = Util.searchKNN(tensor, 'vectorIndex', REDIS_CLIENT)
+        knn_result = Util.searchKNN(tensor, 'searchIndex', REDIS_CLIENT)
         neighbours = Util.getNeighbours(knn_result, 10)
         # get images for neighbours by inventory-number and add them to the json
         for neighbour in neighbours:

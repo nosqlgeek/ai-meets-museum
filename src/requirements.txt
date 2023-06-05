@@ -1,0 +1,13 @@
+minio
+pyminizip
+click
+redis
+json
+math
+python-dotenv
+Flask
+Flask-WTF
+torchvision
+torch 
+pil
+numpy

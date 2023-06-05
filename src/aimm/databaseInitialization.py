@@ -1,10 +1,7 @@
 import redis
 from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 
-from dotenv import load_dotenv
-load_dotenv()
-
-redis_client = redis.StrictRedis(host=os.getenv('REDIS_HOST'), port=os.getenv('REDIS_PORT'), password=os.getenv('REDIS_PASSWORD'))
+redis_client = redis.StrictRedis(host=os.environ.get('REDIS_HOST'), port=os.environ.get('REDIS_PORT'), password=os.environ.get('REDIS_PASSWORD'))
 
 """
 Creates a new index in Redisearch with the specified index_name.

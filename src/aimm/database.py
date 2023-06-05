@@ -25,9 +25,6 @@ from redis.commands.search.result import Result
 from dotenv import load_dotenv
 load_dotenv()
 
-redis_client = redis.StrictRedis(host=os.getenv('REDIS_HOST'), port=os.getenv('REDIS_PORT'), password=os.getenv('REDIS_PASSWORD'))
-model = models.resnet50(weights="ResNet50_Weights.DEFAULT")
-
 """
 Creates a tensor from an input image using the specified model.
 
@@ -37,7 +34,8 @@ Args:
 Returns:
     tensor: A tensor representing the input image after preprocessing and running through the model.
 """
-def createTensor(image_path):
+def createTensor(REDIS_CLIENT, image_path):
+    model = models.resnet50(weights="ResNet50_Weights.DEFAULT")
     # Set model to evaulation mode
     model.eval()
 
@@ -79,7 +77,7 @@ Args:
 Returns:
     ObjektNr (int): The assigned object number.
 """
-def uploadObjectToRedis(json_data, objectClass='art:'):
+def uploadObjectToRedis(REDIS_CLIENT, json_data, objectClass='art:'):
     #Get current ObjektNr
     ObjektNr = redis_client.incr('ObjektNr')
 
@@ -100,7 +98,7 @@ Args:
 Returns:
     None
 """
-def createIndex(index_name, recreate=False, objectClass='art:'):
+def createIndex(REDIS_CLIENT, index_name, recreate=False, objectClass='art:'):
     def createIndexFunction():
         redis_client.ft(index_name=index_name).create_index(
             fields=(
@@ -158,7 +156,7 @@ Args:
 Returns:
     The results of the KNN search.
 """
-def searchKNN(search_tensor, index_name):
+def searchKNN(REDIS_CLIENT, search_tensor, index_name):
     # vector_test for Similarity Search
     search_tensor_bytes = search_tensor[0].numpy().astype(np.float32).tobytes(order='C')
 
@@ -187,7 +185,7 @@ Args:
 Returns:
     list: A list of dictionaries containing search result data.
 """
-def fullTextSearch(searchKeywords, index_name, page):
+def fullTextSearch(REDIS_CLIENT, searchKeywords, index_name, page):
     entries_per_page = 10
     start_entry = (page - 1) * entries_per_page
 
@@ -219,7 +217,7 @@ Args:
 Returns:
     int: The total number of search results.
 """
-def getFullTextSearchCount(searchKeywords, index_name):
+def getFullTextSearchCount(REDIS_CLIENT, searchKeywords, index_name):
     query = searchKeywords
     q = Query(query).paging(0,0).dialect(2)
     result = redis_client.ft(index_name=index_name).search(
@@ -240,7 +238,7 @@ Args:
 Returns:
     list: A list of JSON objects representing the nearest neighbors of the input.
 """
-def getNeighbours(json_input, count):
+def getNeighbours(REDIS_CLIENT, json_input, count):
     neighbours = []
     for i in range(count):
         myjson = json.loads(json_input.docs[i].json)

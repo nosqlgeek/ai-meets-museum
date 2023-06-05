@@ -1,3 +1,0 @@
-minio
-pyminizip
-click

@@ -1,0 +1,7 @@
+.env
+.gitignore
+*.jpg
+*.csv
+.env
+*.json
+*.pyc

@@ -37,6 +37,7 @@ load_dotenv()
 redis_client_test = redis.StrictRedis(host=os.getenv('redis_host_test'), port=os.getenv('redis_port_test'), password=os.getenv('redis_password_test'))
 redis_client_manu = redis.StrictRedis(host=os.getenv('redis_host_manu'), port=os.getenv('redis_port_manu'), password=os.getenv('redis_password_manu'))
 redis_client = redis.StrictRedis(host=os.getenv('redis_host'), port=os.getenv('redis_port'), password=os.getenv('redis_password'))
+redis_client_markus = redis.StrictRedis(host=os.getenv('redis_host_markus'), port=os.getenv('redis_port_markus'), password=os.getenv('redis_password_markus'))
 
 
 #Model imports
@@ -58,7 +59,7 @@ ResNet50 = models.resnet50(weights="ResNet50_Weights.DEFAULT")
 # Which Model should be used?
 model = ResNet50
 # Which Redis DB should be used?
-redis_client = redis_client
+redis_client = redis_client_markus
 # Where are the iamges stored?
 image_folder = os.getenv('image_folder')
 
@@ -80,14 +81,13 @@ def checkPathExistence():
 
 
 """
-Create a tensor from an image file using the provided PyTorch model. The function takes in
-a path to an image file as input and returns a PyTorch tensor. The model used in this
-function should already be set to evaluation mode. The function uses PyTorch's transforms
-module to preprocess the image by resizing it to 256x256, cropping the center to 224x224,
-converting it to a tensor, and normalizing it using the ImageNet mean and standard deviation.
-The function then prepares the input tensor to be used as a batch, and applies the model to
-this batch either on CPU or GPU depending on availability. Finally, the function returns
-the output tensor.
+Creates a tensor from an input image using the specified model.
+
+Args:
+    image_path (str): The file path to the input image.
+
+Returns:
+    tensor: A tensor representing the input image after preprocessing and running through the model.
 """
 def createTensor(image_path):
     # Set model to evaulation mode
@@ -152,7 +152,7 @@ Args:
 Returns:
     None
 """
-def createIndex(index_name, recreate=False):
+def createIndex(index_name, recreate=False, objectClass='art:'):
     def createIndexFunction():
         redis_client.ft(index_name=index_name).create_index(
             fields=(
@@ -175,7 +175,7 @@ def createIndex(index_name, recreate=False):
                     "$.Tensor", "FLAT", {"TYPE": "FLOAT32", "DIM": 1000, "DISTANCE_METRIC": "L2"}, as_name="vectorfield"
                 )
             ),
-            definition=IndexDefinition(prefix=["art:"], index_type=IndexType.JSON)
+            definition=IndexDefinition(prefix=[objectClass], index_type=IndexType.JSON)
         )
     
     t0 = time.time()

@@ -8,7 +8,7 @@ from redis.commands.search.field import (
 )
 from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 
-REDIS_CLIENT = redis.StrictRedis(host=os.environ.get('REDIS_HOST'), port=os.environ.get('REDIS_PORT'), password=os.environ.get('REDIS_PASSWORD'))
+REDIS_CLIENT = redis.StrictRedis(host=os.getenv('REDIS_HOST'), port=os.getenv('REDIS_PORT'), password=os.getenv('REDIS_PASSWORD'))
 
 """
 Creates a new index in Redisearch with the specified index_name.

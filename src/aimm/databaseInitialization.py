@@ -1,3 +1,11 @@
+import redis
+from redis.commands.search.indexDefinition import IndexDefinition, IndexType
+
+from dotenv import load_dotenv
+load_dotenv()
+
+redis_client = redis.StrictRedis(host=os.getenv('REDIS_HOST'), port=os.getenv('REDIS_PORT'), password=os.getenv('REDIS_PASSWORD'))
+
 """
 Creates a new index in Redisearch with the specified index_name.
 Args:
@@ -52,3 +60,6 @@ def createIndex(REDIS_CLIENT, index_name='searchIndex', recreate=False, objectCl
         print(f'Index created in {total} seconds')
     except Exception as e:
         print(e)
+
+
+createIndex(REDIS_CLIENT)

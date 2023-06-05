@@ -1,4 +1,5 @@
 import redis
+import redis.commands.search
 from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 
 redis_client = redis.StrictRedis(host=os.environ.get('REDIS_HOST'), port=os.environ.get('REDIS_PORT'), password=os.environ.get('REDIS_PASSWORD'))

@@ -7,34 +7,35 @@ import redisearch
 import tensorflow as tf
 import json
 import time
+import pickle
 
 import redis
 import redis.commands.search
 from redis.commands.json.path import Path
 from redis.commands.search import Search
+import redis.commands.search.reducers as reducers
 from redis.commands.search.field import (
     TextField,
     VectorField,
 )
+from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 from redis.commands.search.query import Query
 from redis.commands.search.result import Result
 
 from dotenv import load_dotenv
 load_dotenv()
 
-redis_client = redis.StrictRedis(host=os.getenv('redis_host_prod'), port=os.getenv('redis_port_prod'), password=os.getenv('redis_password_prod'))
+redis_client = redis.StrictRedis(host=os.getenv('REDIS_HOST'), port=os.getenv('REDIS_PORT'), password=os.getenv('REDIS_PASSWORD'))
 model = models.resnet50(weights="ResNet50_Weights.DEFAULT")
-image_folder = os.getenv('image_folder')
-
 
 """
-Takes the path of an image and returns a tensor after preprocessing the image using the pre-trained ResNet-18 model.
+Creates a tensor from an input image using the specified model.
 
 Args:
-    image_path (str): The path of the image file to be preprocessed.
-    
+    image_path (str): The file path to the input image.
+
 Returns:
-    tensor: A PyTorch tensor representing the preprocessed image.
+    tensor: A tensor representing the input image after preprocessing and running through the model.
 """
 def createTensor(image_path):
     # Set model to evaulation mode
@@ -69,18 +70,26 @@ def createTensor(image_path):
 
 
 """
-Uploads a new object to Redis.
+Uploads a JSON object to Redis and returns the assigned ObjektNr. 
 
 Args:
-    json_data: A json to be uploaded to Redis.
+    json_data (dict): The JSON object to upload.
+    objectClass (str): The object class to use as a prefix for the Redis key. Default is 'art:'.
 
 Returns:
-    None
+    ObjektNr (int): The assigned object number.
 """
-def uploadObjectToRedis(json_data):
-    #Add Vector Data to JSON in Redis
-    #redis_client.json().set(redis_client.incr('MyKey'), '$.Tensor', {"Tensor": tensor[0].tolist()})
-    redis_client.json().set(redis_client.incr('MyKey'), '$', json_data)
+def uploadObjectToRedis(json_data, objectClass='art:'):
+    #Get current ObjektNr
+    ObjektNr = redis_client.incr('ObjektNr')
+
+    #Add ObjektNr to json
+    json_data['BildNr'] = ObjektNr
+
+    #Upload to Redis
+    redis_client.json().set(objectClass+str(ObjektNr), '$', json_data)
+
+    return ObjektNr
 
 
 """
@@ -91,7 +100,7 @@ Args:
 Returns:
     None
 """
-def createIndex(index_name, recreate=False):
+def createIndex(index_name, recreate=False, objectClass='art:'):
     def createIndexFunction():
         redis_client.ft(index_name=index_name).create_index(
             fields=(
@@ -114,7 +123,7 @@ def createIndex(index_name, recreate=False):
                     "$.Tensor", "FLAT", {"TYPE": "FLOAT32", "DIM": 1000, "DISTANCE_METRIC": "L2"}, as_name="vectorfield"
                 )
             ),
-            definition=IndexDefinition(index_type=IndexType.JSON)
+            definition=IndexDefinition(prefix=[objectClass], index_type=IndexType.JSON)
         )
     
     t0 = time.time()

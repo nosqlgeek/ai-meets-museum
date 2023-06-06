@@ -13,7 +13,7 @@ from wtforms.validators import data_required
 
 load_dotenv()  # take environment variables from .env.
 
-#test commit 02
+#test commit 03
 
 IMG_FOLDER = './static/img'
 UPLOAD_FOLDER = 'ImgUpload/'

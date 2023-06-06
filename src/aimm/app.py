@@ -13,6 +13,8 @@ from wtforms.validators import data_required
 
 load_dotenv()  # take environment variables from .env.
 
+#test commit
+
 IMG_FOLDER = './static/img'
 UPLOAD_FOLDER = 'ImgUpload/'
 app = Flask(__name__)

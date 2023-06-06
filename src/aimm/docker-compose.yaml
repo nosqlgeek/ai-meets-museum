@@ -5,5 +5,5 @@ services:
     ports:
       - 5000:5000
     #volumes:
-    #  - C:/Users/steph/.cache/downloadImage/target_folder:/app/ImgUpload
+    #  - C:/Users/steph/.cache/downloadImage/target_folder:/app/static/ImgStore
     image: aimm

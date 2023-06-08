@@ -30,36 +30,32 @@ from redis.commands.search.query import GeoFilter, NumericFilter, Query
 from redis.commands.search.result import Result
 from redis.commands.search.suggestion import Suggestion
 
-import sys
-sys.path.append('./src/tools/imageClassification')
-from processImages import createTensor
-
 from dotenv import load_dotenv
 load_dotenv()
 
-
 redis_client = redis.StrictRedis(host=os.getenv('redis_host'), port=os.getenv('redis_port'), password=os.getenv('redis_password'))
-#redis_client = redis.StrictRedis(host=os.getenv('redis_host_test'), port=os.getenv('redis_port_test'), password=os.getenv('redis_password_test'))
-#redis_client = redis.StrictRedis(host=os.getenv('redis_host_manu'), port=os.getenv('redis_port_manu'), password=os.getenv('redis_password_manu'))
-#redis_client = redis.StrictRedis(host=os.getenv('redis_host_markus'), port=os.getenv('redis_port_markus'), password=os.getenv('redis_password_markus'))
+
+# folder with images
 image_folder = os.getenv('image_folder')
 
-target = 'C:/Users/steph/.cache/downloadImage/target_folder/'
+# target folder for images after rename
+target_folder = os.getenv('target_folder')
 
+# json file with data
+json_file = open('../oldDataSet.json')
 
-def uploadOldDataToRedis():
+def migrate_data_to_redis():
     images = os.listdir(image_folder)
     if len(images) == 0:
         print(f'No images found in {image_folder}')
         exit()
 
-    f = open('../oldDataSet.json')
-    myjson = json.load(f)
+    myjson = json.load(json_file)
     t0 = time.time()
 
     for image in tqdm(images, bar_format="{percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt}"):
         try:            
-            tensor = createTensor(image_folder+image)
+            tensor = create_tensor(image_folder+image)
             myjsonentry = None
             for entry in myjson:                           
                 if entry['ObjektId'] == int(image.split('_')[0]):                        
@@ -72,7 +68,7 @@ def uploadOldDataToRedis():
             redis_client.json().set('art:'+str(ObjektNr), '$', myjsonentry)
 
             old_file = os.path.join(image_folder, image)
-            new_file = os.path.join(target, str(ObjektNr)+'.jpg')
+            new_file = os.path.join(target_folder, str(ObjektNr)+'.jpg')
             os.rename(old_file, new_file)
 
         except Exception as e:
@@ -83,5 +79,36 @@ def uploadOldDataToRedis():
     total = t1-t0
     print(f'Upload took: {total} seconds')
 
+def create_tensor(image_path):
+    # Set model to evaulation mode
+    model.eval()
 
-uploadOldDataToRedis()
+    # Image normalization
+    preprocess = transforms.Compose([
+        transforms.Resize(256),
+        transforms.CenterCrop(224),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+    ])
+
+    # Image import
+    input_image = Image.open(image_path)
+    input_image = input_image.convert('RGB')
+    image_name = os.path.splitext(os.path.basename(image_path))[0] #input_image.filename
+
+    # Preprocess image and prepare batch
+    input_tensor = preprocess(input_image)
+    input_batch = input_tensor.unsqueeze(0)
+
+    # use cuda cores on gpu
+    if torch.cuda.is_available():
+        input_batch = input_batch.to('cuda')
+        model.to('cuda')
+
+    with torch.no_grad():
+        tensor = model(input_batch)
+
+    return tensor
+
+
+migrate_data_to_redis()

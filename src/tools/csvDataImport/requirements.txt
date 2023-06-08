@@ -1,3 +1,9 @@
 redis
 python-dotenv
 tqdm
+torch
+torchvision
+scikit-learn
+pandas
+tensorflow
+numpy

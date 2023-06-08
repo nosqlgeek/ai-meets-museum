@@ -18,8 +18,8 @@ Args:
 Returns:
     None
 """
-def createIndex(REDIS_CLIENT, index_name='searchIndex', recreate=False, objectClass='art:'):
-    def createIndexFunction():
+def create_index(REDIS_CLIENT, index_name='searchIndex', recreate=False, object_class='art:'):
+    def create_index_function():
         REDIS_CLIENT.ft(index_name=index_name).create_index(
             fields=(
                 TextField(
@@ -41,7 +41,7 @@ def createIndex(REDIS_CLIENT, index_name='searchIndex', recreate=False, objectCl
                     "$.Tensor", "FLAT", {"TYPE": "FLOAT32", "DIM": 1000, "DISTANCE_METRIC": "L2"}, as_name="vectorfield"
                 )
             ),
-            definition=IndexDefinition(prefix=[objectClass], index_type=IndexType.JSON)
+            definition=IndexDefinition(prefix=[object_class], index_type=IndexType.JSON)
         )
     
     t0 = time.time()
@@ -52,10 +52,10 @@ def createIndex(REDIS_CLIENT, index_name='searchIndex', recreate=False, objectCl
             except Exception as e:
                 print('Index does not exist')
             finally:
-                createIndexFunction()                
+                create_index_function()                
         else:
             if not REDIS_CLIENT.exists(index_name):
-                createIndexFunction()
+                create_index_function()
             else:
                 print(f'Index {index_name} already exists')
                 exit()
@@ -65,5 +65,4 @@ def createIndex(REDIS_CLIENT, index_name='searchIndex', recreate=False, objectCl
     except Exception as e:
         print(e)
 
-
-createIndex(REDIS_CLIENT)
+create_index(REDIS_CLIENT)

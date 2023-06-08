@@ -39,11 +39,11 @@ services:
     ports:
       - 5000:5000
     environment:
-      - REDIS_Host=""
-      - REDIS_PORT=""
-      - REDIS_PASSWORD=""
+      - REDIS_HOST=redis-99999.redis.url.com
+      - REDIS_PORT=99999
+      - REDIS_PASSWORD=password
     volumes:
-      - C:/Users/xyz/path/to/image/folder:/app/static/ImgStore
+      - C:/Users/steph/.cache/downloadImage/target_folder:/app/static/ImgStore
     image: aimm
 ```
 

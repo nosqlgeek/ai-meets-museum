@@ -8,6 +8,9 @@ from redis.commands.search.field import (
 )
 from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 
+from dotenv import load_dotenv
+load_dotenv()
+
 REDIS_CLIENT = redis.StrictRedis(host=os.getenv('REDIS_HOST'), port=os.getenv('REDIS_PORT'), password=os.getenv('REDIS_PASSWORD'))
 
 """

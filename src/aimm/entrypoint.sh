@@ -1,7 +1,7 @@
 #!/bin/bash
 # Initialization steps
 echo "Initialization of Database..."
-python /app/databaseInitialization.py
+python /app/docker_entrypoint/databaseInitialization.py
 
 # Start the application
 echo "Starting the application..."

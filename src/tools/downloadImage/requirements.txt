@@ -1,4 +1,0 @@
-minio
-pyminizip
-python-dotenv
-tqdm

@@ -66,8 +66,8 @@ def upload_image():
         neighbours = Util.getNeighbours(knn_result, 10)
         # get images for neighbours by inventory-number and add them to the json
         for neighbour in neighbours:
-            inv_nr = neighbour["InventarNr"]
-            image_filename = f"{inv_nr}.jpg"
+            image_nr = neighbour["BildNr"]
+            image_filename = f"{image_nr}.jpg"
             neighbour["image_filename"] = image_filename
         session["neighbours"] = neighbours
 
@@ -115,8 +115,8 @@ def search_object():
 
     # get images for search objects by inventory-number
     for search in search_data:
-        inv_nr = search.get("InventarNr")
-        image_filename = f"{inv_nr}.jpg"
+        image_nr = search.get("BildNr")
+        image_filename = f"{image_nr}.jpg"
         search["image_filename"] = image_filename
 
     # remember the last opened url

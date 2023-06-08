@@ -19,6 +19,13 @@
     </div>
 </nav>
 
+<script>
+function handleImageError(image, index) {
+  image.style.display = 'none';
+  document.getElementById('no-image-text-' + index).style.display = 'block';
+  }
+</script>
+
 {% block content %}     {% endblock %}
 </body>
 </html>

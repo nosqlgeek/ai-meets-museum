@@ -31,7 +31,8 @@
         <div class="row g-0">
             <div class="col-md-4 d-flex align-items-center justify-content-center">
                 <img src="{{ url_for('static', filename='ImgStore/' + search['image_filename']) }}" alt="Image"
-                     class="img-fluid" style="max-height: 350px;">
+                    class="img-fluid img_size" onerror="handleImageError(this, {{ loop.index }})">
+                    <p id="no-image-text-{{ loop.index }}" style="display: none;">Kein Bild gefunden</p>
             </div>
             <div class="col-md-8">
                 <div class="card-body">

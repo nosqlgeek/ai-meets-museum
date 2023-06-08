@@ -24,6 +24,7 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 REDIS_CLIENT = redis.Redis(host=os.getenv("REDIS_HOST"), port=os.getenv("REDIS_PORT"),
                            password=os.getenv("REDIS_PASSWORD"))
 
+
 # form to enter the object data
 class ObjectForm(FlaskForm):
     InventarNr = StringField(validators=[data_required()])
@@ -36,9 +37,13 @@ class ObjectForm(FlaskForm):
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    session.clear()
     form = ObjectForm()
-    return render_template("index.html", form=form)
+    flash_message = None
+    flash_time = session.get('flash_time')
+    if flash_time and time.time() - flash_time < 3:
+        flash_message = "Objekt erfolgreich gespeichert"
+    session.clear()
+    return render_template("index.html", form=form, flash_message=flash_message)
 
 
 @app.route('/upload-image', methods=["GET", "POST"])
@@ -145,11 +150,10 @@ def save_to_database():
     # REDIS_CLIENT.save(json_data)
 
     # Move image from ImgUpload to ImgStore
-    src = f"ImgUpload/{session.get('uploaded_filename')}"
-    dest = f'static/ImgStore/{data["InventarNr"]}.jpg'
-    os.replace(src, dest)
+    # src = f"ImgUpload/{session.get('uploaded_filename')}"
+    # dest = f'static/ImgStore/{data["InventarNr"]}.jpg'
+    # os.replace(src, dest)
 
-    flash("Objekt erfolgreich gespeichert", "success")
     session['flash_time'] = time.time()
     return redirect(url_for('home'))
 

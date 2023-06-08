@@ -27,3 +27,8 @@
   -webkit-border-radius: 5px;
   box-shadow: 1px 2px 4px rgba(0,0,0,.4);
 }
+
+.img_size{
+  max-height: 350px;
+  max-width: 350px;
+}

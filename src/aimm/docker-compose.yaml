@@ -4,6 +4,10 @@ services:
     container_name: aimm
     ports:
       - 5000:5000
-    #volumes:
-    #  - C:/Users/steph/.cache/downloadImage/target_folder:/app/static/ImgStore
+    environment:
+      - REDIS_Host=""
+      - REDIS_PORT=""
+      - REDIS_PASSWORD=""
+    volumes:
+      - C:/Users/steph/.cache/downloadImage/target_folder:/app/static/ImgStore
     image: aimm

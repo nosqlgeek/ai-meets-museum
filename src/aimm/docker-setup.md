@@ -53,18 +53,18 @@ Zuerst muss eine Eingabeaufforderung (aka CMD) im Verzeichnis *src/aimm/* geöff
 
 Der Befehl *dir* sollte nun den Inhalt des Ordners auflisten:
 ```
-05.06.2023  18:15    <DIR>          .
-05.06.2023  18:15    <DIR>          ..
-05.06.2023  18:14                25 .env
-05.06.2023  17:44             6.834 app.py
-05.06.2023  16:06             5.759 database.py
-05.06.2023  16:06             2.378 databaseInitialization.py
-05.06.2023  18:05               297 Dockerfile
-05.06.2023  18:00               195 entrypoint.sh
-05.06.2023  16:15               126 requirements.txt
-05.06.2023  14:26    <DIR>          static
-05.06.2023  14:26    <DIR>          templates
-05.06.2023  14:26             3.194 Util.py
+08.06.2023  13:34    <DIR>          .
+08.06.2023  13:34    <DIR>          ..
+08.06.2023  12:01                25 .env
+08.06.2023  13:29             6.811 app.py
+08.06.2023  12:50             3.194 database.py
+08.06.2023  13:29               376 docker-compose.yaml
+08.06.2023  12:01               297 Dockerfile
+08.06.2023  13:34    <DIR>          docker_entrypoint
+08.06.2023  12:48               206 entrypoint.sh
+08.06.2023  13:29               111 requirements.txt
+08.06.2023  13:34    <DIR>          static
+08.06.2023  13:34    <DIR>          templates
 ```
 
 

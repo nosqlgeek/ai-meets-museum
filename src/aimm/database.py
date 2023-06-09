@@ -78,13 +78,13 @@ Returns:
 """
 def upload_object_to_redis(REDIS_CLIENT, json_data, object_class='art:'):
     #Get current ObjektNr
-    objekt_nr = redis_client.incr('ObjektNr')
+    objekt_nr = REDIS_CLIENT.incr('ObjektNr')
 
     #Add ObjektNr to json
     json_data['BildNr'] = objekt_nr
 
     #Upload to Redis
-    redis_client.json().set(object_class+str(objekt_nr), '$', json_data)
+    REDIS_CLIENT.json().set(object_class+str(objekt_nr), '$', json_data)
 
     return objekt_nr
 
@@ -109,7 +109,7 @@ def search_knn(REDIS_CLIENT, search_tensor, index_name):
     query = "*=>[KNN 10 @vectorfield $searchVector]"
     q = Query(query).sort_by('__vectorfield_score').dialect(2)
     
-    result = redis_client.ft(index_name=index_name).search(
+    result = REDIS_CLIENT.ft(index_name=index_name).search(
                 query=q,
                 query_params={'searchVector': search_tensor_bytes}                
             )
@@ -134,7 +134,7 @@ def full_text_search(REDIS_CLIENT, search_keywords, index_name, page):
 
     query = search_keywords
     q = Query(query).paging(start_entry,10).dialect(2)
-    result = redis_client.ft(index_name=index_name).search(
+    result = REDIS_CLIENT.ft(index_name=index_name).search(
                 query=q
             )
 
@@ -163,7 +163,7 @@ Returns:
 def get_full_text_search_count(REDIS_CLIENT, search_keywords, index_name):
     query = search_keywords
     q = Query(query).paging(0,0).dialect(2)
-    result = redis_client.ft(index_name=index_name).search(
+    result = REDIS_CLIENT.ft(index_name=index_name).search(
                 query=q
             )
             

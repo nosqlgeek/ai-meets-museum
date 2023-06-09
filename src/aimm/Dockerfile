@@ -10,7 +10,6 @@ RUN mkdir static/ImgStore
 RUN mv entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-
 EXPOSE 5000
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

@@ -6,7 +6,7 @@ import os
 from werkzeug.utils import secure_filename
 from flask import Flask, flash, request, redirect, url_for, send_from_directory, render_template, session
 import time
-import Util
+import database
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField
 from wtforms.validators import data_required
@@ -61,10 +61,10 @@ def upload_image():
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))  # save uploaded image to UPLOAD_FOLDER
         session['uploaded_filename'] = filename
         file_path = UPLOAD_FOLDER + filename
-        tensor = Util.createTensor(file_path)
-        knn_result = Util.searchKNN(tensor, 'searchIndex', REDIS_CLIENT)
-        neighbours = Util.getNeighbours(knn_result, 10)
-        # get images for neighbours by inventory-number and add them to the json
+        tensor = database.create_tensor(file_path)
+        knn_result = database.search_knn(REDIS_CLIENT, tensor, 'searchIndex')
+        neighbours = database.get_neighbours(knn_result, 10)
+        # get images for neighbours by image-number and add them to the json
         for neighbour in neighbours:
             image_nr = neighbour["BildNr"]
             image_filename = f"{image_nr}.jpg"
@@ -95,33 +95,36 @@ def show_image(filename):
 @app.route('/search-objects', methods=["GET", "POST"])
 def search_object():
     if request.args.get('search'):
-        searchKeywords = request.args.get('search')
+        search_keywords = request.args.get('search')
     # check if search-form is empty
     elif request.form.get('search') is None and session.get('neighbours'):
         return redirect(url_for('fill_form'))
     elif request.form.get('search') is None:
         return redirect(url_for('home'))
     else:
-        searchKeywords = request.form.get('search')
+        search_keywords = request.form.get('search')
 
-    # Seitennummer aus der URL abrufen (Standardwert: 1)
+    # Get page-number from the URL (default: 1)
     page = int(request.args.get('page', 1))
 
-    session["searchKeywords"] = searchKeywords
-    search_count = Util.getFullTextSearchCount(searchKeywords=searchKeywords, index_name='searchIndex')
+    session["searchKeywords"] = search_keywords
+    search_count = database.get_full_text_search_count(REDIS_CLIENT, search_keywords=search_keywords,
+                                                       index_name='searchIndex')
     page_count = math.ceil(search_count / 10)
 
-    search_data = Util.fullTextSearch(searchKeywords=searchKeywords, index_name='searchIndex', page=page)
+    search_data = database.full_text_search(REDIS_CLIENT, search_keywords=search_keywords, index_name='searchIndex',
+                                            page=page)
 
-    # get images for search objects by inventory-number
+    # get images for search objects by image-number
     for search in search_data:
-        image_nr = search.get("BildNr")
+        image_nr = search["BildNr"]
+        print(image_nr)
         image_filename = f"{image_nr}.jpg"
         search["image_filename"] = image_filename
 
     # remember the last opened url
     referer = request.headers.get('Referer')
-    return render_template("search.html", search_data=search_data, referer=referer, searched_keyword=searchKeywords,
+    return render_template("search.html", search_data=search_data, referer=referer, searched_keyword=search_keywords,
                            page_count=page_count, current_page=page)
 
 
@@ -146,13 +149,12 @@ def save_to_database():
     data = request.form.to_dict()
     del data['submit']
     json_data = json.dumps(data)
-    print(json_data)
-    # REDIS_CLIENT.save(json_data)
+    # object_nr = database.upload_object_to_redis(REDIS_CLIENT, json_data, object_class='art:')
 
     # Move image from ImgUpload to ImgStore
     # src = f"ImgUpload/{session.get('uploaded_filename')}"
-    # dest = f'static/ImgStore/{data["InventarNr"]}.jpg'
-    # os.replace(src, dest)
+    # destination = f'static/ImgStore/{object_nr}.jpg'
+    # os.replace(src, destination)
 
     session['flash_time'] = time.time()
     return redirect(url_for('home'))

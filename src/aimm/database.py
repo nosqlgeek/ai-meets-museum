@@ -33,7 +33,7 @@ Args:
 Returns:
     tensor: A tensor representing the input image after preprocessing and running through the model.
 """
-def create_tensor(REDIS_CLIENT, image_path):
+def create_tensor(image_path):
     model = models.resnet50(weights="ResNet50_Weights.DEFAULT")
     # Set model to evaulation mode
     model.eval()
@@ -139,7 +139,6 @@ def full_text_search(REDIS_CLIENT, search_keywords, index_name, page):
             )
 
     search_data = []
-    search_data.append(result.total)
     for doc in result.docs:
         search = json.loads(doc.json)
         del search['Tensor']
@@ -181,7 +180,7 @@ Args:
 Returns:
     list: A list of JSON objects representing the nearest neighbors of the input.
 """
-def get_neighbours(REDIS_CLIENT, json_input, count):
+def get_neighbours(json_input, count):
     neighbours = []
     for i in range(count):
         myjson = json.loads(json_input.docs[i].json)

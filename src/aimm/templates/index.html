@@ -47,7 +47,7 @@
         </div>
 
         <!--        Bild hochladen und anzeigen-->
-        <div class="col-md-10 col-lg-4 text-center border rounded-3">
+        <div class="col-md-10 col-lg-5 text-center border rounded-3">
             <form method="post" action="{{ url_for('upload_image') }}" enctype="multipart/form-data">
                 <div class="pt-3">
                     {% if filename: %}
@@ -55,7 +55,7 @@
                     {% endif %}
                 </div>
                 <div class="mt-4">
-                    <input type="file" name="file" autocomplete="off" required class="form-control mb-2" id="formFile">
+                    <input type="file" name="file" autocomplete="off" required class="form-control form-control-sm mb-2" id="formFile">
                     <input type="submit" class="btn btn-primary float-right mb-2" role="button" value="Vorschläge anzeigen">
                 </div>
             </form>

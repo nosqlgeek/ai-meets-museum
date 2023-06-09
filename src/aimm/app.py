@@ -118,7 +118,6 @@ def search_object():
     # get images for search objects by image-number
     for search in search_data:
         image_nr = search["BildNr"]
-        print(image_nr)
         image_filename = f"{image_nr}.jpg"
         search["image_filename"] = image_filename
 

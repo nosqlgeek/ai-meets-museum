@@ -47,7 +47,12 @@ services:
     image: aimm
 ```
 
-## Schritt 4: Build Docker Image
+## Schritt 4: Change End of Line Sequence
+Da Windows standardmäßig *CRLF* als Zeilen Ende verwendet, muss dies zuvor auf *LF* umgestellt werden.
+Dies sollte in jedem Text Editor möglich sein (z.B. Notepad++). 
+
+
+## Schritt 5: Build Docker Image
 Dieser Schritt ist wohl der zeitaufwendigste und kann je nach Endgerät einige Minuten dauern.   
 Zuerst muss eine Eingabeaufforderung (aka CMD) im Verzeichnis *src/aimm/* geöfffnet werden.
 
@@ -75,7 +80,7 @@ Anschließend kann das Docker Image mit folgendem Befehl gebaut werden:
 docker build -t aimm .
 ```
 
-## Schritt 5: Docker Container erstellen
+## Schritt 6: Docker Container erstellen
 Sollten alle vorherigen Schritte erfolgreich durchgelaufen sein, kann nun der Container erstellt werden.    
 Dies geht dank Docker ebenfalls recht einfach, hierzu ist nur dieser Command notwendig:     
 (Wichtig: die CMD ist weiterhin im *src/aimm/* Verzeichnis)
@@ -83,6 +88,6 @@ Dies geht dank Docker ebenfalls recht einfach, hierzu ist nur dieser Command not
 docker compose up -d
 ```
 
-## Schritt 6: App Zugriff
+## Schritt 7: App Zugriff
 Zuvor wurde in der docker-compose Datei der Port 5000 auf dem Host Gerät in den Container gebunden.     
 Deshalb kann nun über *localhost:5000* auf die App zugegriffen werden.

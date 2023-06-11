@@ -8,6 +8,7 @@ from werkzeug.utils import secure_filename
 from flask import Flask, flash, request, redirect, url_for, send_from_directory, render_template, session
 import time
 import database
+import shutil
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField
 from wtforms.validators import data_required
@@ -48,7 +49,7 @@ def home():
     # if request.args.get("filename"):
     #     os.remove(UPLOAD_FOLDER + request.args.get("filename"))
     
-    delete_files_from_folder()
+    #delete_files_from_folder()
     session.clear()
     return render_template("index.html", form=form, flash_message=flash_message)
 
@@ -154,19 +155,17 @@ def transfer():
 def save_to_database():
     data = request.form.to_dict()
     del data['submit']
-    json_data = json.dumps(data)
-    # object_nr = database.upload_object_to_redis(REDIS_CLIENT, json_data, object_class='art:')
-    
-    # object_nr for testing
-    object_nr = 8999
+    str_data = json.dumps(data)
+    json_data = json.loads(str_data)
+    object_nr = database.upload_object_to_redis(REDIS_CLIENT, json_data, object_class='art:')
 
     # Move image from ImgUpload to ImgStore
     src = f"ImgUpload/{request.args.get('filename')}"
     destination = f'static/ImgStore/{object_nr}.jpg'
-    os.replace(src, destination)
+    shutil.move(src, destination)
 
     session['flash_time'] = time.time()
-    delete_files_from_folder()
+    #delete_files_from_folder()
     return redirect(url_for('home'))
 
 
@@ -196,8 +195,9 @@ def allowed_file(filename):
 
 
 def delete_files_from_folder():
-    for f in os.listdir(UPLOAD_FOLDER):
-        os.remove(os.path.join(UPLOAD_FOLDER, f))
+    if os.listdir('ImgUpload/'):
+        for f in os.listdir('ImgUpload/'):
+            os.remove(os.path.join('ImgUpload/', f))
 
 
 if __name__ == '__main__':

@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %} AI Meets Museum {% endblock %}
+{% block content %}
+<!--Fill Out Form-->
+<div class="container px-4 py-5">
+    <div class="row justify-content-center align-items-center g-lg-5 pt-5">
+        <div class="col-lg-6 text-center text-lg-start">
+            <h2>Dateneingabe zur Objekterfassung:</h2>
+            <form action="{{ url_for('save_to_database', filename=filename) }}" method="post" role="form" class="form">
+                <div class="form-floating mb-3">
+                    {{ form.InventarNr(class="form-control", placeholder="Inventar-Nummer", id="inv_nr") }}
+                    <label>Inventar-Nummer</label>
+                </div>
+                <div class="form-floating mb-3">
+                    {{ form.Bezeichnung(class="form-control", placeholder="Bezeichnung", id="bezeichnung") }}
+                    <label>Bezeichnung</label>
+                </div>
+                <div class="form-floating mb-3">
+                    {{ form.Material(class="form-control", placeholder="Material", id="material") }}
+                    <label>Material</label>
+                </div>
+                <div class="form-floating mb-3">
+                    {{ form.TrachslerNr(class="form-control", placeholder="Trachsler", id="trachsler") }}
+                    <label>Trachsler</label>
+                </div>
+                <div class="form-floating mb-3">
+                    {{ form.Beschreibung(style="height: 100px", class="form-control", placeholder="Beschreibung", id="beschreibung") }}
+                    <label>Beschreibung</label>
+                </div>
+                <div class="text-center mb-2">
+                    {% if flash_message %}
+                    <div class="alert alert-success" role="alert" id="flash-message">
+                        {{ flash_message }}
+                    </div>
+                    {% endif %}
+                    {{ form.submit(class="btn btn-primary float-right", type="submit", value="Sichern") }}
+                    <a class="btn btn-primary float-right" href="{{ url_for('home', filename=filename) }}">Abbrechen</a>
+                </div>
+                <script>
+                var flashMessage = document.getElementById('flash-message');
+                setTimeout(function(){
+                    flashMessage.style.display = 'none';
+                }, 3000)
+                </script>
+            </form>
+        </div>
+
+        <!--        Upload and Display Image-->
+        <div class="col-md-10 col-lg-auto text-center border rounded-3" style="max-width: 50%">
+                <div class="pt-3">
+                    {% if filename: %}
+                    <img src="{{ url_for('show_image', filename=filename) }}" class="object-fit-sm-contain rounded
+                    img-fluid img_size" alt="">
+                    {% endif %}
+                </div>
+            <form method="post" action="{{ url_for('upload_image') }}" enctype="multipart/form-data">
+                <div class="mt-4">
+                    <input type="file" name="file" autocomplete="off" required class="form-control form-control-sm mb-2" id="formFile">
+                    <input type="submit" class="btn btn-primary float-right mb-2" role="button" value="Vorschläge anzeigen">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+
+<!--10 Nearest Neighbours-->
+<div class="container">
+    {% for neighbour in neighbours %}
+    <div class="card mb-3" style="max-width: 1980px;">
+        <div class="row g-0">
+            <div class="col-md-4 d-flex align-items-center justify-content-center">
+                <img src="{{ url_for('static', filename='ImgStore/' + neighbour['image_filename']) }}" alt="Image"
+                     class="img-fluid img_size" onerror="handleImageError(this, {{ loop.index }})">
+                <p id="no-image-text-{{ loop.index }}" style="display: none;">Kein Bild gefunden</p>
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <p class="card-text">
+                    <dl>
+                        <dt>Inventar-Nummer</dt>
+                        <dd>{{ neighbour["InventarNr"] }}</dd>
+                        <dt>Bezeichnung</dt>
+                        <dd>{{ neighbour["Bezeichnung"] }}</dd>
+                        <dt>Material</dt>
+                        <dd>{{ neighbour["Material"] }}</dd>
+                        <dt>Trachsler</dt>
+                        <dd>{{ neighbour["TrachslerNr"] }}</dd>
+                        <dt>Beschreibung</dt>
+                        <dd>{{ neighbour["Beschreibung"] }}</dd>
+                    </dl>
+                    </p>
+                    <form action="{{ url_for('transfer', filename=filename, form_param=form_param, neighbours_param=neighbours_param) }}" method="post" role="form" class="form">
+                        <input type="hidden" name="InventarNr" value="{{ neighbour['InventarNr'] }}">
+                        <input type="hidden" name="Bezeichnung" value="{{ neighbour['Bezeichnung'] }}">
+                        <input type="hidden" name="Material" value="{{ neighbour['Material'] }}">
+                        <input type="hidden" name="TrachslerNr" value="{{ neighbour['TrachslerNr'] }}">
+                        <input type="hidden" name="Beschreibung" value="{{ neighbour['Beschreibung'] }}">
+                        <button name="transfer" type="submit" class="btn btn-primary">Übernehmen</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,3 +1,16 @@
+<<<<<<< HEAD
+click
+redis
+json
+math
+python-dotenv
+Flask
+Flask-WTF
+torchvision
+torch 
+pil
+numpy
+=======
 torch
 torchvision
 scikit-learn
@@ -7,3 +20,4 @@ redis
 python-dotenv
 numpy
 redisearch
+>>>>>>> main

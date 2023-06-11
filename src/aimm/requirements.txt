@@ -1,11 +1,8 @@
-click
-json
-math
+pillow
 Flask
 Flask-WTF
 torch
-torchvision 
-pil
+torchvision
 scikit-learn
 pandas
 tensorflow

@@ -39,10 +39,14 @@ class ObjectForm(FlaskForm):
 @app.route("/", methods=["GET", "POST"])
 def home():
     form = ObjectForm()
+
     flash_message = None
     flash_time = session.get('flash_time')
     if flash_time and time.time() - flash_time < 3:
         flash_message = "Objekt erfolgreich gespeichert"
+
+    if request.args.get("filename"):
+        os.remove(UPLOAD_FOLDER + request.args.get("filename"))
     session.clear()
     return render_template("index.html", form=form, flash_message=flash_message)
 
@@ -149,7 +153,8 @@ def save_to_database():
     data = request.form.to_dict()
     del data['submit']
     json_data = json.dumps(data)
-    object_nr = database.upload_object_to_redis(REDIS_CLIENT, json_data, object_class='art:')
+    # object_nr = database.upload_object_to_redis(REDIS_CLIENT, json_data, object_class='art:')
+    object_nr = 10
 
     # Move image from ImgUpload to ImgStore
     src = f"ImgUpload/{request.args.get('filename')}"

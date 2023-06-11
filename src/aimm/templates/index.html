@@ -35,7 +35,7 @@
                     </div>
                     {% endif %}
                     {{ form.submit(class="btn btn-primary float-right", type="submit", value="Sichern") }}
-                    <a class="btn btn-primary float-right" href="{{ url_for('home') }}">Abbrechen</a>
+                    <a class="btn btn-primary float-right" href="{{ url_for('home', filename=filename) }}">Abbrechen</a>
                 </div>
                 <script>
                 var flashMessage = document.getElementById('flash-message');

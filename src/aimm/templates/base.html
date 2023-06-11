@@ -11,7 +11,7 @@
 <!--Navbar-->
 <nav class="navbar navbar-expand-lg bg-main">
     <div class="container-fluid">
-        <a class="navbar-brand" href="{{ url_for('home') }}"><img class="d-block" src="{{ url_for('static', filename='img/logo.png') }}" alt="logo ai meets museum" height="50"></a>
+        <a class="navbar-brand" href="{{ url_for('home', filename=filename) }}"><img class="d-block" src="{{ url_for('static', filename='img/logo.png') }}" alt="logo ai meets museum" height="50"></a>
         <form method="post" action="{{ url_for('search_object', filename=filename, form_param=form_param, neighbours_param=neighbours_param) }}" class="d-flex" role="search">
             <input class="form-control me-2" type="search" placeholder="Suche" aria-label="Search" name="search" value="{{ searched_keyword }}">
             <button class="btn btn-outline-light" type="submit">Suche</button>

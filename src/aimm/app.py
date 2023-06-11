@@ -45,8 +45,10 @@ def home():
     if flash_time and time.time() - flash_time < 3:
         flash_message = "Objekt erfolgreich gespeichert"
 
-    if request.args.get("filename"):
-        os.remove(UPLOAD_FOLDER + request.args.get("filename"))
+    # if request.args.get("filename"):
+    #     os.remove(UPLOAD_FOLDER + request.args.get("filename"))
+    
+    delete_files_from_folder()
     session.clear()
     return render_template("index.html", form=form, flash_message=flash_message)
 
@@ -154,7 +156,9 @@ def save_to_database():
     del data['submit']
     json_data = json.dumps(data)
     # object_nr = database.upload_object_to_redis(REDIS_CLIENT, json_data, object_class='art:')
-    object_nr = 10
+    
+    # object_nr for testing
+    object_nr = 8999
 
     # Move image from ImgUpload to ImgStore
     src = f"ImgUpload/{request.args.get('filename')}"
@@ -162,6 +166,7 @@ def save_to_database():
     os.replace(src, destination)
 
     session['flash_time'] = time.time()
+    delete_files_from_folder()
     return redirect(url_for('home'))
 
 
@@ -189,6 +194,9 @@ def fill_form():
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def delete_files_from_folder():
+    for f in os.listdir(UPLOAD_FOLDER):
+        os.remove(os.path.join(UPLOAD_FOLDER, f))
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,23 +1,15 @@
-<<<<<<< HEAD
 click
-redis
 json
 math
-python-dotenv
 Flask
 Flask-WTF
-torchvision
-torch 
-pil
-numpy
-=======
 torch
-torchvision
+torchvision 
+pil
 scikit-learn
 pandas
 tensorflow
-redis
 python-dotenv
 numpy
+redis
 redisearch
->>>>>>> main

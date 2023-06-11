@@ -7,7 +7,7 @@
     <div class="row justify-content-center align-items-center g-lg-5 pt-5">
         <div class="col-lg-6 text-center text-lg-start">
             <h2>Dateneingabe zur Objekterfassung:</h2>
-            <form action="{{ url_for('save_to_database') }}" method="post" enctype="multipart/form-data" role="form" class="form">
+            <form action="{{ url_for('save_to_database', filename=filename) }}" method="post" role="form" class="form">
                 <div class="form-floating mb-3">
                     {{ form.InventarNr(class="form-control", placeholder="Inventar-Nummer", id="inv_nr") }}
                     <label>Inventar-Nummer</label>
@@ -48,13 +48,13 @@
 
         <!--        Upload and Display Image-->
         <div class="col-md-10 col-lg-auto text-center border rounded-3" style="max-width: 50%">
-            <form method="post" action="{{ url_for('upload_image') }}" enctype="multipart/form-data">
                 <div class="pt-3">
                     {% if filename: %}
                     <img src="{{ url_for('show_image', filename=filename) }}" class="object-fit-sm-contain rounded
                     img-fluid img_size" alt="">
                     {% endif %}
                 </div>
+            <form method="post" action="{{ url_for('upload_image') }}" enctype="multipart/form-data">
                 <div class="mt-4">
                     <input type="file" name="file" autocomplete="off" required class="form-control form-control-sm mb-2" id="formFile">
                     <input type="submit" class="btn btn-primary float-right mb-2" role="button" value="Vorschläge anzeigen">
@@ -91,7 +91,7 @@
                         <dd>{{ neighbour["Beschreibung"] }}</dd>
                     </dl>
                     </p>
-                    <form action="{{ url_for('transfer') }}" method="post">
+                    <form action="{{ url_for('transfer', filename=filename, form_param=form_param, neighbours_param=neighbours_param) }}" method="post" role="form" class="form">
                         <input type="hidden" name="InventarNr" value="{{ neighbour['InventarNr'] }}">
                         <input type="hidden" name="Bezeichnung" value="{{ neighbour['Bezeichnung'] }}">
                         <input type="hidden" name="Material" value="{{ neighbour['Material'] }}">

@@ -1,5 +1,6 @@
 import math
 import json
+import urllib
 import redis
 from dotenv import load_dotenv
 import os
@@ -59,27 +60,26 @@ def upload_image():
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))  # save uploaded image to UPLOAD_FOLDER
-        session['uploaded_filename'] = filename
         file_path = UPLOAD_FOLDER + filename
         tensor = database.create_tensor(file_path)
         knn_result = database.search_knn(REDIS_CLIENT, tensor, 'searchIndex')
         neighbours = database.get_neighbours(knn_result, 10)
         # get images for neighbours by image-number and add them to the json
+        neighbours_param = []
         for neighbour in neighbours:
             image_nr = neighbour["BildNr"]
             image_filename = f"{image_nr}.jpg"
             neighbour["image_filename"] = image_filename
-        session["neighbours"] = neighbours
+            neighbour_json = json.dumps(neighbour)
+            neighbour = urllib.parse.quote(neighbour_json)
+            neighbours_param.append(neighbour)
 
         nearest_neighbour = neighbours[0]
-        session["nearest_neighbour"] = nearest_neighbour
+        nearest_neighbour_json = json.dumps(nearest_neighbour)
+        nearest_neighbour = urllib.parse.quote(nearest_neighbour_json)
 
-        session["inv_nr"] = nearest_neighbour["InventarNr"]
-        session["bezeichnung"] = nearest_neighbour["Bezeichnung"]
-        session["material"] = nearest_neighbour["Material"]
-        session["trachsler"] = nearest_neighbour["TrachslerNr"]
-        session["beschreibung"] = nearest_neighbour["Beschreibung"]
-        return redirect(url_for('fill_form'))  # fill form with session data
+        return redirect(url_for('fill_form', filename=filename, form=nearest_neighbour,
+                                neighbours_param=neighbours_param))
     else:
         flash('Allowed image types are -> png, jpg, jpeg, gif')
         return redirect(request.url)
@@ -94,20 +94,17 @@ def show_image(filename):
 # search for objects in the redis database
 @app.route('/search-objects', methods=["GET", "POST"])
 def search_object():
+    neighbours_param = request.args.getlist("neighbours_param")
+    form_param = request.args.get("form_param")
+    filename = request.args.get("filename")
     if request.args.get('search'):
         search_keywords = request.args.get('search')
-    # check if search-form is empty
-    elif request.form.get('search') is None and session.get('neighbours'):
-        return redirect(url_for('fill_form'))
-    elif request.form.get('search') is None:
-        return redirect(url_for('home'))
     else:
         search_keywords = request.form.get('search')
 
     # Get page-number from the URL (default: 1)
     page = int(request.args.get('page', 1))
 
-    session["searchKeywords"] = search_keywords
     search_count = database.get_full_text_search_count(REDIS_CLIENT, search_keywords=search_keywords,
                                                        index_name='searchIndex')
     page_count = math.ceil(search_count / 10)
@@ -121,25 +118,29 @@ def search_object():
         image_filename = f"{image_nr}.jpg"
         search["image_filename"] = image_filename
 
-    # remember the last opened url
-    referer = request.headers.get('Referer')
-    return render_template("search.html", search_data=search_data, referer=referer, searched_keyword=search_keywords,
-                           page_count=page_count, current_page=page)
+    return render_template("search.html", search_data=search_data, searched_keyword=search_keywords,
+                           page_count=page_count, current_page=page, filename=filename, form_param=form_param,
+                           neighbours_param=neighbours_param)
 
 
 # transfer data from a neighbour to the form
 @app.route("/transfer-form", methods=["POST", "GET"])
 def transfer():
-    form = ObjectForm(
-        InventarNr=request.form.get("InventarNr"),
-        Bezeichnung=request.form.get("Bezeichnung"),
-        Material=request.form.get("Material"),
-        TrachslerNr=request.form.get("TrachslerNr"),
-        Beschreibung=request.form.get("Beschreibung")
-    )
-    filename = session.get('uploaded_filename')
-    neighbours = session.get('neighbours')
-    return render_template('index.html', form=form, filename=filename, neighbours=neighbours)
+    form = ObjectForm(request.form)
+    filename = request.args.get("filename")
+    form_data = form.data
+    form_json = json.dumps(form_data)
+    form_param = urllib.parse.quote(form_json)
+
+    neighbours_param = request.args.getlist("neighbours_param")
+    neighbours = []
+    for neighbour in neighbours_param:
+        neighbour = urllib.parse.unquote(neighbour)
+        neighbour = json.loads(neighbour)
+        neighbours.append(neighbour)
+
+    return render_template('index.html', form=form, filename=filename, neighbours=neighbours,
+                           neighbours_param=neighbours_param, form_param=form_param)
 
 
 # save the form to the database
@@ -148,12 +149,12 @@ def save_to_database():
     data = request.form.to_dict()
     del data['submit']
     json_data = json.dumps(data)
-    # object_nr = database.upload_object_to_redis(REDIS_CLIENT, json_data, object_class='art:')
+    object_nr = database.upload_object_to_redis(REDIS_CLIENT, json_data, object_class='art:')
 
     # Move image from ImgUpload to ImgStore
-    # src = f"ImgUpload/{session.get('uploaded_filename')}"
-    # destination = f'static/ImgStore/{object_nr}.jpg'
-    # os.replace(src, destination)
+    src = f"ImgUpload/{request.args.get('filename')}"
+    destination = f'static/ImgStore/{object_nr}.jpg'
+    os.replace(src, destination)
 
     session['flash_time'] = time.time()
     return redirect(url_for('home'))
@@ -162,17 +163,21 @@ def save_to_database():
 # fill form with the data stored in the session
 @app.route("/filled-form", methods=["GET", "POST"])
 def fill_form():
-    filename = session.get('uploaded_filename')
-    neighbours = session.get('neighbours')
-    neighbours_images = session.get('neighbours_images')
-    form = ObjectForm(
-        InventarNr=session.get("inv_nr"),
-        Bezeichnung=session.get("bezeichnung"),
-        Material=session.get("material"),
-        TrachslerNr=session.get("trachsler"),
-        Beschreibung=session.get("beschreibung")
-    )
-    return render_template('index.html', form=form, filename=filename, neighbours=neighbours, neighbours_images=neighbours_images)
+    filename = request.args.get("filename")
+    neighbours_param = request.args.getlist("neighbours_param")
+    neighbours = []
+    for neighbour in neighbours_param:
+        neighbour = urllib.parse.unquote(neighbour)
+        neighbour = json.loads(neighbour)
+        neighbours.append(neighbour)
+
+    form_param = request.args.get("form")
+    form_json = urllib.parse.unquote(form_param)
+    form_data = json.loads(form_json)
+
+    form = ObjectForm(data=form_data)
+    return render_template('index.html', form=form, filename=filename, neighbours=neighbours,
+                           neighbours_param=neighbours_param, form_param=form_param)
 
 
 # Methods:

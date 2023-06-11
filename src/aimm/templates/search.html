@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 {% block title %} Objektsuche {% endblock %}
 {% block content %}
-{% if referer %}
-<a class="btn btn-outline-dark my-2 mx-4" role="button" href="{{ referer }}">Zurück</a>
+
+{% if form_param %}
+<a class="btn btn-outline-dark my-2 mx-4" role="button" href="{{ url_for('fill_form', filename=filename, form=form_param, neighbours_param=neighbours_param) }}">Zurück</a>
 {% endif %}
+
 
 {% if not search_data %}
 
@@ -60,9 +62,9 @@
     <ul class="pagination justify-content-center">
         {% if current_page > 1 %}
         <li class="page-item">
-            <a class="page-link" href="{{ url_for('search_object', page=current_page-1, search=searched_keyword) }}" aria-label="Previous">
+            <a class="page-link" href="{{ url_for('search_object', page=current_page-1, search=searched_keyword, filename=filename, form_param=form_param, neighbours_param=neighbours_param) }}" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
-                <span class="sr-only">Previous</span>
+                <span class="sr-only">Zurück</span>
             </a>
         </li>
         {% endif %}
@@ -75,7 +77,7 @@
         {% set end_page = current_page + 2 if current_page < page_count - 1 else page_count %}
         {% for i in range(start_page, end_page+1) %}
         <li class="page-item {% if i == current_page %}active{% endif %}">
-            <a class="page-link" href="{{ url_for('search_object', page=i, search=searched_keyword) }}">{{ i }}</a>
+            <a class="page-link" href="{{ url_for('search_object', page=i, search=searched_keyword, filename=filename, form_param=form_param, neighbours_param=neighbours_param) }}">{{ i }}</a>
         </li>
         {% endfor %}
         {% if current_page < page_count - 2 %}
@@ -84,15 +86,15 @@
         </li>
         {% if current_page < page_count %}
         <li class="page-item">
-            <a class="page-link" href="{{ url_for('search_object', page=page_count, search=searched_keyword) }}">{{ page_count }}</a>
+            <a class="page-link" href="{{ url_for('search_object', page=page_count, search=searched_keyword, filename=filename, form_param=form_param, neighbours_param=neighbours_param) }}">{{ page_count }}</a>
         </li>
         {% endif %}
         {% endif %}
         {% if current_page < page_count %}
         <li class="page-item">
-            <a class="page-link" href="{{ url_for('search_object', page=current_page+1, search=searched_keyword) }}" aria-label="Next">
+            <a class="page-link" href="{{ url_for('search_object', page=current_page+1, search=searched_keyword, filename=filename, form_param=form_param, neighbours_param=neighbours_param) }}" aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
-                <span class="sr-only">Next</span>
+                <span class="sr-only">Weiter</span>
             </a>
         </li>
         {% endif %}

@@ -49,7 +49,7 @@ def home():
     # if request.args.get("filename"):
     #     os.remove(UPLOAD_FOLDER + request.args.get("filename"))
     
-    #delete_files_from_folder()
+    delete_files_from_folder()
     session.clear()
     return render_template("index.html", form=form, flash_message=flash_message)
 
@@ -165,7 +165,7 @@ def save_to_database():
     shutil.move(src, destination)
 
     session['flash_time'] = time.time()
-    #delete_files_from_folder()
+    delete_files_from_folder()
     return redirect(url_for('home'))
 
 

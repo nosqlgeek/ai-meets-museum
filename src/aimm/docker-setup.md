@@ -48,7 +48,9 @@ services:
 ```
 
 ## Schritt 4: Change End of Line Sequence
-Da Windows standardmäßig *CRLF* als Zeilen Ende verwendet, muss dies zuvor auf *LF* umgestellt werden.
+Die Datei *entrypoint.sh* wird in [Schritt 5](#schritt-5-build-docker-image) in das Docker Image kopiert und wird bei jedem Container Start ausgeführt.
+Da Windows standardmäßig *CRLF* als Zeilen Ende verwendet, muss dies bei der Datei *entrypoint.sh* unbedingt zuvor auf *LF* umgestellt werden.
+Dies ist notwendig, da unser Docker Image auf Linux basiert und Linux mit *CRLF* nichts anfangen kann und es dementsprechend zu Fehler beim Container Start kommt.
 Dies sollte in jedem Text Editor möglich sein (z.B. Notepad++). 
 
 

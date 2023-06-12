@@ -46,10 +46,7 @@ def home():
     if flash_time and time.time() - flash_time < 3:
         flash_message = "Objekt erfolgreich gespeichert"
 
-    # if request.args.get("filename"):
-    #     os.remove(UPLOAD_FOLDER + request.args.get("filename"))
-    
-    #delete_files_from_folder()
+    delete_files_from_folder()
     session.clear()
     return render_template("index.html", form=form, flash_message=flash_message)
 
@@ -153,19 +150,21 @@ def transfer():
 # save the form to the database
 @app.route("/save-form", methods=["POST", "GET"])
 def save_to_database():
+    filename = request.args.get('filename')
     data = request.form.to_dict()
     del data['submit']
+    data['Zeitstempel'] = time.time()
+    data['Tensor'] = database.create_tensor(UPLOAD_FOLDER + filename)[0].tolist()
     str_data = json.dumps(data)
     json_data = json.loads(str_data)
     object_nr = database.upload_object_to_redis(REDIS_CLIENT, json_data, object_class='art:')
 
     # Move image from ImgUpload to ImgStore
-    src = f"ImgUpload/{request.args.get('filename')}"
+    src = f"ImgUpload/{filename}"
     destination = f'static/ImgStore/{object_nr}.jpg'
     shutil.move(src, destination)
 
     session['flash_time'] = time.time()
-    #delete_files_from_folder()
     return redirect(url_for('home'))
 
 

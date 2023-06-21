@@ -42,7 +42,18 @@ e have leveraged the power of Flask to build an intuitive and user-friendly fron
 We employed the versatile Bootstrap framework to create a visually appealing and responsive frontend design. With Bootstrap, we have harnessed a comprehensive set of CSS and JavaScript components, allowing us to effortlessly build a modern and consistent user interface. By leveraging Bootstrap's grid system, responsive utilities, and extensive library of pre-built components, we have ensured a seamless user experience across various devices and screen sizes.
 
 ## Features
-- tba
+
+### Searching Similar Objects:
+This feature enables users to search for similar objects within the application based on specific criteria or characteristics. By leveraging Redis, Flask, and ResNet50, the application utilizes advanced image recognition and similarity algorithms to identify and retrieve objects that closely resemble the user's query.
+    
+### Upload New Objects:
+With this feature, users can easily upload new objects to the application. Leveraging the power of Flask, users can seamlessly submit images or other relevant data, which are then processed and stored in the Redis database. This capability allows users to contribute to the application's dataset, expanding its collection of objects and enhancing the overall functionality and breadth of the system.
+    
+### Getting Dataset Recommendations for New Objects:
+This feature leverages the combination of Redis, Flask, and ResNet50 to provide users with dataset recommendations based on the new objects they upload. By analyzing the characteristics and attributes of the uploaded objects, the application suggests relevant datasets within its database. This recommendation system facilitates exploration and discovery, helping users identify datasets that align with their interests or complement the newly uploaded objects.
+    
+### Save New Object to Database:
+Through the integration of Redis and Flask, this feature allows users to save newly uploaded objects directly to the database. When a user submits an object, the application stores the relevant information, such as the object's image and other associated data, in the Redis database. This ensures that the object becomes part of the application's dataset and can be accessed, searched, and utilized by other users and features within the application.
 
 ## Prerequisites 
 

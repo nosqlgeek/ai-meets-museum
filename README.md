@@ -1,12 +1,7 @@
 
-# AI meets Museum
-
-  LOGO
+# ![Logo](https://github.com/nosqlgeek/ai-meets-museum/assets/63855548/6039b0dd-1a78-464b-92c6-746099e0e966)
 
 This project is a joint effort of the [University of Applied Sciences Augsburg](https://www.hs-augsburg.de), [NoSQL Geeks](https://www.nosqlgeeks.com/de/index.html), and the [local museum in Krumbach (Schwaben)](https://www.museum-krumbach.de).
-
-  
-  
 
 *  **Subject**: AI-powered tool for simplified information gathering around artifacts in a museum
 

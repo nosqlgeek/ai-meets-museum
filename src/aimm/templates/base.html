@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-<!--Navbar-->
+<!--Navbar with Logo and Search-->
 <nav class="navbar navbar-expand-lg bg-main">
     <div class="container-fluid">
         <a class="navbar-brand" href="{{ url_for('home', filename=filename) }}"><img class="d-block" src="{{ url_for('static', filename='img/logo.jpg') }}" alt="logo ai meets museum" height="50"></a>
@@ -19,6 +19,9 @@
     </div>
 </nav>
 
+<!--
+    Show a text if no image was found in the search
+-->
 <script>
 function handleImageError(image, index) {
   image.style.display = 'none';

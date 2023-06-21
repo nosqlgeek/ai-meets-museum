@@ -30,7 +30,7 @@ src/aimm/*app files*
 
 ### docker-compose.yaml
 Im Ordner aimm befindet sich eine docker-compose.yaml Datei, welche genau Instruktionen für die Docker Umgebung enthält.    
-Diese muss mit den entsprechenden Credentials befüllt und auf die lokalen Gegebenheiten angepasst werden.
+Diese muss mit den entsprechenden Redis Credentials befüllt werden. Zudem müssen aktuell die Bilder (welche bereits richtig umbenannt sind) noch in einem lokalem Verzeichnis abgelegt, welches in der docker-compose.yaml anschließend referenziert werden muss.
 ```
 version: '3'
 services:

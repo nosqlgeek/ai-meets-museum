@@ -36,7 +36,7 @@ By using Redis to store vector embeddings, we gain several advantages. First, th
 ### Frontend
 
 #### Flask
-e have leveraged the power of Flask to build an intuitive and user-friendly frontend implementation. Using Flask as the foundation, we have created a seamless bridge between our frontend and backend services, including the robust Redis database. With Flask, we have crafted a dynamic and responsive user interface that effortlessly connects users to the powerful functionality of our backend services.
+We have leveraged the power of Flask to build an intuitive and user-friendly frontend implementation. Using Flask as the foundation, we have created a seamless bridge between our frontend and backend services, including the robust Redis database. With Flask, we have crafted a dynamic and responsive user interface that effortlessly connects users to the powerful functionality of our backend services.
 
 #### Bootstrap
 We employed the versatile Bootstrap framework to create a visually appealing and responsive frontend design. With Bootstrap, we have harnessed a comprehensive set of CSS and JavaScript components, allowing us to effortlessly build a modern and consistent user interface. By leveraging Bootstrap's grid system, responsive utilities, and extensive library of pre-built components, we have ensured a seamless user experience across various devices and screen sizes.

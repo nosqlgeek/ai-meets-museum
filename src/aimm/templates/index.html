@@ -7,6 +7,7 @@
     <div class="row justify-content-center align-items-center g-lg-5 pt-5">
         <div class="col-lg-6 text-center text-lg-start">
             <h2>Dateneingabe zur Objekterfassung:</h2>
+            <!-- Display the form -->
             <form action="{{ url_for('save_to_database', filename=filename) }}" method="post" role="form" class="form">
                 <div class="form-floating mb-3">
                     {{ form.InventarNr(class="form-control", placeholder="Inventar-Nummer", id="inv_nr") }}
@@ -37,6 +38,10 @@
                     {{ form.submit(class="btn btn-primary float-right", type="submit", value="Sichern") }}
                     <a class="btn btn-primary float-right" href="{{ url_for('home', filename=filename) }}">Abbrechen</a>
                 </div>
+
+                <!--
+                    Message after saving the image and the datas
+                -->
                 <script>
                 var flashMessage = document.getElementById('flash-message');
                 setTimeout(function(){
@@ -65,7 +70,7 @@
 </div>
 </div>
 
-<!--10 Nearest Neighbours-->
+<!-- Display 10 Nearest Neighbours with Images -->
 <div class="container">
     {% for neighbour in neighbours %}
     <div class="card mb-3" style="max-width: 1980px;">

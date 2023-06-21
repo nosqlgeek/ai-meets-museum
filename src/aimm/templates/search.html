@@ -2,6 +2,7 @@
 {% block title %} Objektsuche {% endblock %}
 {% block content %}
 
+<!-- Check if in the search was nothing found -->
 {% if form_param %}
 <a class="btn btn-outline-dark my-2 mx-4" role="button" href="{{ url_for('fill_form', filename=filename, form=form_param, neighbours_param=neighbours_param) }}">Zurück</a>
 {% endif %}
@@ -27,6 +28,7 @@
     <p> Suchergebnisse für:<strong> {{searched_keyword}} </strong></p>
 </div>
 
+<!-- Display the objects and the images  -->
 {% for search in search_data %}
 <div class="container">
     <div class="card mb-3" style="max-width: 1980px;">
@@ -58,6 +60,8 @@
     </div>
 </div>
 {% endfor %}
+
+<!-- Paging -->
 <nav aria-label="Page navigation example">
     <ul class="pagination justify-content-center">
         {% if current_page > 1 %}

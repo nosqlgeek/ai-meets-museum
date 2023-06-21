@@ -10,7 +10,6 @@ This project is a joint effort of the [University of Applied Sciences Augsburg](
 *  **Implementation idea**: We will evaluate several Machine Learning models in order to create vector embeddings. Finally Redis' Vector Similarity Search feature will be used to identify similarities between already classified and new artifacts.
 
 ## Getting Started
-- <a href="https://github.com/nosqlgeek/ai-meets-museum/blob/main/src/aimm/docker-setup.md" target="_blank">Installation Guide</a>
 - [Installation Guide](https://github.com/nosqlgeek/ai-meets-museum/blob/main/src/aimm/docker-setup.md)
 - [Product Overview](https://showcase.informatik.hs-augsburg.de/sose-2023/ai-meets-museum)
 
@@ -43,7 +42,7 @@ e have leveraged the power of Flask to build an intuitive and user-friendly fron
 We employed the versatile Bootstrap framework to create a visually appealing and responsive frontend design. With Bootstrap, we have harnessed a comprehensive set of CSS and JavaScript components, allowing us to effortlessly build a modern and consistent user interface. By leveraging Bootstrap's grid system, responsive utilities, and extensive library of pre-built components, we have ensured a seamless user experience across various devices and screen sizes.
 
 ## Features
-- suchfunktion
+- tba
 
 ## Prerequisites 
 

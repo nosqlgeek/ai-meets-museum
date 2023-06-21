@@ -12,7 +12,11 @@ This project is a joint effort of the [University of Applied Sciences Augsburg](
 ## Getting Started
 - [Installation Guide](https://github.com/nosqlgeek/ai-meets-museum/blob/main/src/aimm/docker-setup.md)
 - [Product Overview](https://showcase.informatik.hs-augsburg.de/sose-2023/ai-meets-museum)
+
 ## Technology Stack
+
+![technologien](https://github.com/nosqlgeek/ai-meets-museum/assets/63855548/b964f6e1-929a-4b48-9847-6ccc4370587a)
+
 
 ### Backend
 

@@ -1,36 +1,36 @@
 # Docker Containerized Setup
 
-Wir haben uns dazu entschieden die App in einem Docker Container bereitzustellen, damit ist die Installation für den Endanwender deutlich vereinfacht und reduziert.
-Hierfür sind jedoch ein paar Schritte notwendig:
+We decided to deploy the app in a Docker container, this way the installation is much simplified and reduced for the end user.
+However, a few steps are necessary for this:
 
-## Schritt 1: Docker Umgebung installieren
-Angenommen das Endgerät basiert auf Windows, sind folgende Schritte notwendig.
+## Step 1: Install Docker environment
+Assuming the end device is based on Windows, the following steps are necessary.
 
-### Voraussetungen
+### Prerequisites
 * Windows Version:  
 Windows 11 64-bit: Home or Pro version 21H2 or higher, or Enterprise or Education version 21H2 or higher.   
 Windows 10 64-bit: Home or Pro 21H2 (build 19044) or higher, or Enterprise or Education 21H2 (build 19044) or higher.
 
-* WSL 2 aktiviert:  
+* WSL 2 activated:  
 https://learn.microsoft.com/en-us/windows/wsl/install
 
 ### Docker Desktop Client
-Für die Installation einfach den Client auf folgender Seite herunterladen und installieren  
+For the installation simply download and install the client on the following page  
 https://docs.docker.com/desktop/install/windows-install/
 
-## Schritt 2: Github Branch klonen
-Hierzu auf der Startseite des Repositories über den Button "Code" --> "Download ZIP" den main Branch herunterladen.  
-Im Anschluss im gewünschtem Ordner entpacken.
+## Step 2: Clone Github Branch
+To do this, download the main branch on the start page of the repository via the button "Code" --> "Download ZIP".  
+Then unpack it in the desired folder.
 
-## Schritt 3: Config Dateien anpassen
-Nun sollte sich im zuvor entpacktem Ordner folgende Ordnerstruktur befinden:    
+## Step 3: Customize config files
+Now the following folder structure should be in the previously unzipped folder:    
 ```
 src/aimm/*app files*
 ```
 
 ### docker-compose.yaml
-Im Ordner aimm befindet sich eine docker-compose.yaml Datei, welche genau Instruktionen für die Docker Umgebung enthält.    
-Diese muss mit den entsprechenden Redis Credentials befüllt werden. Zudem müssen aktuell die Bilder (welche bereits richtig umbenannt sind) noch in einem lokalem Verzeichnis abgelegt werden, welches in der docker-compose.yaml anschließend referenziert wird.
+The aimm folder contains a docker-compose.yaml file which contains exact instructions for the Docker environment.    
+This file must be filled with the appropriate Redis credentials. In addition, the images (which have already been renamed correctly) must be stored in a local directory, which is then referenced in the docker-compose.yaml file.
 ```
 version: '3'
 services:
@@ -47,18 +47,18 @@ services:
     image: aimm
 ```
 
-## Schritt 4: Change End of Line Sequence
-Die Datei *entrypoint.sh* wird in [Schritt 5](#schritt-5-build-docker-image) in das Docker Image kopiert und wird bei jedem Container Start ausgeführt.
-Da Windows standardmäßig *CRLF* als Zeilen Ende verwendet, muss dies bei der Datei *entrypoint.sh* unbedingt zuvor auf *LF* umgestellt werden.
-Dies ist notwendig, da unser Docker Image auf Linux basiert und Linux mit *CRLF* nichts anfangen kann und es dementsprechend zu Fehler beim Container Start kommt.
-Dies sollte in jedem Text Editor möglich sein (z.B. Notepad++). 
+## Step 4: Change End of Line Sequence
+The file *entrypoint.sh* is copied to the Docker image in [step 5](#step-5-build-docker-image) and is executed at every container start.
+Since Windows uses *CRLF* as the line end by default, it is imperative to change this to *LF* for the *entrypoint.sh* file beforehand.
+This is necessary because our Docker image is based on Linux and Linux can't do anything with *CRLF* and accordingly errors occur at container startup.
+This should be possible in any text editor (e.g. Notepad++). 
 
 
-## Schritt 5: Build Docker Image
-Dieser Schritt ist wohl der zeitaufwendigste und kann je nach Endgerät einige Minuten dauern.   
-Zuerst muss eine Eingabeaufforderung (aka CMD) im Verzeichnis *src/aimm/* geöfffnet werden.
+## Step 5: Build Docker Image
+This step is probably the most time-consuming and can take a few minutes depending on the end device.   
+First, a command prompt (aka CMD) must be opened in the *src/aimm/* directory.
 
-Der Befehl *dir* sollte nun den Inhalt des Ordners auflisten:
+The *dir* command should now list the contents of the folder:
 ```
 08.06.2023  13:34    <DIR>          .
 08.06.2023  13:34    <DIR>          ..
@@ -75,21 +75,21 @@ Der Befehl *dir* sollte nun den Inhalt des Ordners auflisten:
 ```
 
 
-Anschließend kann das Docker Image mit folgendem Befehl gebaut werden:  
-(Der Parameter -t gibt dem Image den Namen "aimm" mit)
+After that, the Docker image can be built with the following command:  
+(The parameter -t gives the image the name "aimm").
 
 ```
 docker build -t aimm .
 ```
 
-## Schritt 6: Docker Container erstellen
-Sollten alle vorherigen Schritte erfolgreich durchgelaufen sein, kann nun der Container erstellt werden.    
-Dies geht dank Docker ebenfalls recht einfach, hierzu ist nur dieser Command notwendig:     
-(Wichtig: die CMD ist weiterhin im *src/aimm/* Verzeichnis)
+## Step 6: Create Docker Container
+If all previous steps have been successfully completed, the container can now be created.    
+This is also quite easy thanks to Docker, only this command is necessary:     
+(Important: the CMD is still in the *src/aimm/* directory).
 ```
 docker compose up -d
 ```
 
-## Schritt 7: App Zugriff
-Zuvor wurde in der docker-compose Datei der Port 5000 auf dem Host Gerät in den Container gebunden.     
-Deshalb kann nun über *localhost:5000* auf die App zugegriffen werden.
+## Step 7: App access
+Previously, in the docker-compose file, port 5000 on the host device was bound into the container.     
+Therefore, the app can now be accessed via *http://localhost:5000*.

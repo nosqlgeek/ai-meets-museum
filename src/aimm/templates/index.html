@@ -39,9 +39,7 @@
                     <a class="btn btn-primary float-right" href="{{ url_for('home', filename=filename) }}">Abbrechen</a>
                 </div>
 
-                <!--
-                    Message after saving the image and the datas
-                -->
+                <!-- Message after saving the image and the datas -->
                 <script>
                 var flashMessage = document.getElementById('flash-message');
                 setTimeout(function(){
@@ -51,7 +49,7 @@
             </form>
         </div>
 
-        <!--        Upload and Display Image-->
+        <!-- Upload and Display Image -->
         <div class="col-md-10 col-lg-auto text-center border rounded-3" style="max-width: 50%">
                 <div class="pt-3">
                     {% if filename: %}

@@ -18,7 +18,7 @@ This project is a joint effort of the [University of Applied Sciences Augsburg](
 ![technologien](https://github.com/nosqlgeek/ai-meets-museum/assets/63855548/b964f6e1-929a-4b48-9847-6ccc4370587a)
 
 
-### Backend
+### Backend - [Code](https://github.com/nosqlgeek/ai-meets-museum/blob/3b6739b48c4cd2487f1c690d0b666c89488804d2/src/aimm/database.py)
 
 #### ResNet50
 We utilized the powerful ResNet50 model to generate image vector data from our source images. Leveraging the state-of-the-art deep learning capabilities of ResNet50, we have extracted rich feature representations, allowing us to efficiently store and manage our image data in our Redis database. By combining the strengths of ResNet50 and Redis, we have created a robust solution for handling image data, enabling seamless retrieval and integration within our projects.
@@ -33,7 +33,7 @@ Redis, being an in-memory data structure store, is primarily designed for key-va
 
 By using Redis to store vector embeddings, we gain several advantages. First, the compact nature of vector representations allows for efficient storage and retrieval, as the numerical vectors occupy less space compared to the original object data. Second, Redis provides fast and scalable operations, enabling quick access to the vector embeddings. This facilitates various operations, such as similarity search, recommendation systems, and data analytics, which can be performed efficiently using the stored vector data in Redis.
 
-### Frontend
+### Frontend [Code](https://github.com/nosqlgeek/ai-meets-museum/blob/3b6739b48c4cd2487f1c690d0b666c89488804d2/src/aimm/app.py)
 
 #### Flask
 We have leveraged the power of Flask to build an intuitive and user-friendly frontend implementation. Using Flask as the foundation, we have created a seamless bridge between our frontend and backend services, including the robust Redis database. With Flask, we have crafted a dynamic and responsive user interface that effortlessly connects users to the powerful functionality of our backend services.
@@ -43,17 +43,17 @@ We employed the versatile Bootstrap framework to create a visually appealing and
 
 ## Features
 
-### Searching Similar Objects:
-This feature enables users to search for similar objects within the application based on specific criteria or characteristics. By leveraging Redis, Flask, and ResNet50, the application utilizes advanced image recognition and similarity algorithms to identify and retrieve objects that closely resemble the user's query.
+### Searching Similar Objects: - [Code](https://github.com/nosqlgeek/ai-meets-museum/blob/3b6739b48c4cd2487f1c690d0b666c89488804d2/src/aimm/database.py#L131-L148)
+This feature enables users to search for similar objects within the application based on specific criteria or characteristics. By leveraging Redis and Flask, the application utilizes similarity algorithms to identify and retrieve objects that closely resemble the user's query.
     
-### Upload New Objects:
-With this feature, users can easily upload new objects to the application. Leveraging the power of Flask, users can seamlessly submit images or other relevant data, which are then processed and stored in the Redis database. This capability allows users to contribute to the application's dataset, expanding its collection of objects and enhancing the overall functionality and breadth of the system.
+### Upload New Objects: - [Code](https://github.com/nosqlgeek/ai-meets-museum/blob/3b6739b48c4cd2487f1c690d0b666c89488804d2/src/aimm/app.py#L68-L108)
+With this feature, users can easily upload new objects to the application. Leveraging the power of Flask, users can seamlessly submit images, which can be then processed and can be stored in the Redis database later on. This capability allows users to contribute to the application's dataset, expanding its collection of objects and enhancing the overall functionality and breadth of the system.
     
-### Getting Dataset Recommendations for New Objects:
+### Getting Dataset Recommendations for New Objects: - [Code](https://github.com/nosqlgeek/ai-meets-museum/blob/3b6739b48c4cd2487f1c690d0b666c89488804d2/src/aimm/database.py#L102-L117)
 This feature leverages the combination of Redis, Flask, and ResNet50 to provide users with dataset recommendations based on the new objects they upload. By analyzing the characteristics and attributes of the uploaded objects, the application suggests relevant datasets within its database. This recommendation system facilitates exploration and discovery, helping users identify datasets that align with their interests or complement the newly uploaded objects.
     
-### Save New Object to Database:
-Through the integration of Redis and Flask, this feature allows users to save newly uploaded objects directly to the database. When a user submits an object, the application stores the relevant information, such as the object's image and other associated data, in the Redis database. This ensures that the object becomes part of the application's dataset and can be accessed, searched, and utilized by other users and features within the application.
+### Save New Object to Database: - [Code](https://github.com/nosqlgeek/ai-meets-museum/blob/3b6739b48c4cd2487f1c690d0b666c89488804d2/src/aimm/database.py#L79-L89)
+Through the integration of Redis and Flask, this feature allows users to save newly uploaded objects directly to the database. When a user submits an object, the application stores the relevant information, such as the object's image vector and other associated data in a JSON format to the Redis database. This ensures that the object becomes part of the application's dataset and can be accessed, searched, and utilized by other users and features within the application.
 
 ## Prerequisites 
 

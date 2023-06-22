@@ -13,7 +13,8 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField
 from wtforms.validators import data_required
 
-load_dotenv()  # take environment variables from .env.
+# Take environment variables from .env.
+load_dotenv()  
 
 IMG_FOLDER = './static/img'
 UPLOAD_FOLDER = 'ImgUpload/'
@@ -30,7 +31,7 @@ REDIS_CLIENT = redis.Redis(host=os.getenv("REDIS_HOST"), port=os.getenv("REDIS_P
  Class form to enter the object data
 
  Returns:
-    the Flask form 
+    The Flask form 
 """ 
 class ObjectForm(FlaskForm):
     InventarNr = StringField(validators=[data_required()])
@@ -41,14 +42,15 @@ class ObjectForm(FlaskForm):
     submit = SubmitField()
 
 """
-    Shows the homepage with the forms
+    Shows the homepage with the form and a message after saving
+    
     Returns:
-        to the index.html and clears the form
+        rendering the index.html
 """
 @app.route("/", methods=["GET", "POST"])
 def home():
     form = ObjectForm()
-    #Show a message after saving the form and the image
+    # Show a message after saving the form and the image
     flash_message = None
     flash_time = session.get('flash_time')
     if flash_time and time.time() - flash_time < 3:
@@ -67,7 +69,7 @@ def home():
 """
 @app.route('/upload-image', methods=["GET", "POST"])
 def upload_image():
-    # check if a image was uploaded
+    # Check if a image was uploaded
     if 'file' not in request.files:
         flash('No file part')
         return redirect(request.url)
@@ -78,16 +80,16 @@ def upload_image():
         return redirect(request.url)
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
-        # save uploaded image to UPLOAD_FOLDER
+        # Save uploaded image to UPLOAD_FOLDER
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         file_path = UPLOAD_FOLDER + filename
         # Create Tensor for nearest neighbours search
         tensor = database.create_tensor(file_path)
         # Search for nearest neighbours
         knn_result = database.search_knn(REDIS_CLIENT, tensor, 'searchIndex')
-        # get the 10 nearest neighbours
+        # Get the 10 nearest neighbours
         neighbours = database.get_neighbours(knn_result, 10)
-        # get images for neighbours by image-number and add them to the json
+        # Get images for neighbours by image-number and add them to the json
         neighbours_param = []
         for neighbour in neighbours:
             image_nr = neighbour["BildNr"]
@@ -115,7 +117,7 @@ def upload_image():
         filename (str): A string to save the filename of the image
         
     Returns:
-        function: sending a file from the directory
+        Function: sending a file from the directory
 """
 @app.route('/uploads/<path:filename>')
 def show_image(filename):
@@ -126,11 +128,11 @@ def show_image(filename):
     Search for the objects in the redis database with paging by using the full_text_search and get_full_text_search_count methods
     
     Returns:
-        the render template search.html to show the results on the website
+        The render template search.html to show the results on the website
 """
 @app.route('/search-objects', methods=["GET", "POST"])
 def search_object():
-    # load the searched objects into the forms
+    # Load the searched objects into the forms
     neighbours_param = request.args.getlist("neighbours_param")
     form_param = request.args.get("form_param")
     filename = request.args.get("filename")
@@ -149,7 +151,7 @@ def search_object():
     search_data = database.full_text_search(REDIS_CLIENT, search_keywords=search_keywords, index_name='searchIndex',
                                             page=page)
 
-    # get images for search objects by image-number
+    # Fet images for search objects by image-number
     for search in search_data:
         image_nr = search["BildNr"]
         image_filename = f"{image_nr}.jpg"
@@ -191,7 +193,7 @@ def transfer():
     Save the uploaded image with the json to the redis database
 
     Returns:
-        after saving, redirect to the home.html to go to the homepage
+        After saving, redirect to the home.html to go to the homepage
 """
 @app.route("/save-form", methods=["POST", "GET"])
 def save_to_database():
@@ -219,13 +221,13 @@ def save_to_database():
     To fill form with the data stored in the last session, after using the search method
 
     Returns:
-        the render template index.html with the filled form datas
+        The render template index.html with the filled form datas
 """
 @app.route("/filled-form", methods=["GET", "POST"])
 def fill_form():
-    # get the filename
+    # Get the filename
     filename = request.args.get("filename")
-    # get the list with the neighbours
+    # Get the list with the neighbours
     neighbours_param = request.args.getlist("neighbours_param")
     # Split the url to load the neighbours
     neighbours = []
@@ -245,7 +247,8 @@ def fill_form():
 
 
 """
-    Split imagename
+    Check if filename has one of the allowed file extensions 
+    
     Returns:
         the filename of the uploaded image
         
